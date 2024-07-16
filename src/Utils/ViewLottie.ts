@@ -1,0 +1,1 @@
+export const LottieView = require("lottie-react-native")
