@@ -6,41 +6,16 @@ import LottieView from "lottie-react-native";
 import Background from "@/components/background";
 import { Fontisto } from "@expo/vector-icons";
 import { usePlayer } from "../../context/player/playerContext";
+import getRandomMusic from "@/Utils/randomMusics";
+import getFileName from "@/Utils/getMusicName";
 
 export default function Home() {
-  const [sound, setSound] = useState<Audio.Sound | undefined>(undefined);
-  const { player, updatePlayer } = usePlayer();
 
+  const { player, updatePlayer, list, playSound, playTopList, pauseSound, resumeSound } = usePlayer();
   const animation = useRef<LottieView>(null);
 
-  async function playSound() {
-    console.log("CARREGANDO SOM");
-    const { sound } = await Audio.Sound.createAsync(
-    require("../../../assets/song.mp3")
-    );
-    setSound(sound);
+  const randomItems = getRandomMusic(list, 4);
 
-    console.log("TOCANDO MUSICA");
-
-    // await sound.playAsync();
-    updatePlayer({name: 'Metallica', status: 'Pause', isPlaying: true});
-  }
-  async function pauseSound() {
-    if (sound) {
-      console.log("Pausing Sound");
-      await sound.pauseAsync();
-      updatePlayer({name: '...', status: 'Play', isPlaying: false});
-    }
-  }
-
-  useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
 
   useEffect(() => {
     if (player.isPlaying) {
@@ -51,11 +26,38 @@ export default function Home() {
   }, [player]);
 
   return (
-    <View className="flex-1 w-screen h-screen justify-center items-center">
-      
+    <View className="flex-1 w-screen h-screen  items-center">
       <Background />
-<Text className="text-white text-5xl">{player.name}</Text>
-      <View className="w-96 h-32 my-10">
+      <Text className="relative right-28 my-5 mt-20 text-white text-3xl">
+        Aleatórias
+      </Text>
+      <View className="flex mx-4">
+        {randomItems.map((uri) => (
+          <TouchableOpacity
+            className="bg-white/10 h-10 my-1 rounded-md justify-center px-3"
+            key={uri}
+            onPress={() => {
+              playTopList(uri),
+                updatePlayer({
+                  name: `${getFileName(uri)}`,
+                  status: "Pause",
+                  isPlaying: true,
+                  uri: ''
+                });
+            }}
+          >
+            <Text
+              ellipsizeMode="tail"
+              numberOfLines={1}
+              className="text-white text-md text-left"
+            >
+              {getFileName(uri)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View className="flex w-full h-32 items-center justify-center">
         {player.isPlaying ? (
           <LottieView
             style={{
@@ -65,20 +67,27 @@ export default function Home() {
               width: "100%",
               height: 50,
             }}
+            resizeMode="cover"
             loop
             ref={animation}
             source={require("../../../assets/animations/playing-white.json")}
           />
         ) : null}
       </View>
-
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        className="text-white mt-24 text-lg"
+      >
+        {player.name}
+      </Text>
       <View
         style={{ width: "85%" }}
-        className="flex flex-col bg-white/20 rounded-2xl my-10 py-4 justify-between items-center"
+        className="flex absolute bottom-5 flex-col bg-white/20 rounded-2xl py-4 justify-between items-center"
       >
         <View className="flex flex-row w-full h-28 mb-10 px-8 justify-between items-center">
           <TouchableOpacity
-            onPress={player.isPlaying ? pauseSound : playSound}
+            onPress={() => console.log('VOLTAR MUSICA')}
             style={{
               zIndex: 10,
               width: 50,
@@ -89,20 +98,22 @@ export default function Home() {
               borderRadius: 20,
             }}
           >
-            <Text style={{ color: "#fff" }}>Ant</Text>
+            <Fontisto name="step-backwrad" size={24} color="white" />
           </TouchableOpacity>
 
           <TouchableOpacity
             className="z-10 w-28 h-28 bg-white/20 justify-center items-center rounded-full"
-            onPress={player.isPlaying ? pauseSound : playSound}
+            onPress={player.isPlaying ? pauseSound : resumeSound}
           >
-            <Text style={{ color: "#fff" }}>
-              {player.status}
-            </Text>
+            {player.isPlaying ? (
+              <Fontisto name="pause" size={32} color="white" />
+            ) : (
+              <Fontisto name="play" size={32} color="white" />
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={player.isPlaying ? pauseSound : playSound}
+            onPress={() => console.log('PROXIMA MUSICA')}
             style={{
               zIndex: 10,
               width: 50,
@@ -113,7 +124,7 @@ export default function Home() {
               borderRadius: 20,
             }}
           >
-            <Text style={{ color: "#fff" }}>Prox</Text>
+            <Fontisto name="step-forward" size={24} color="white" />
           </TouchableOpacity>
         </View>
 

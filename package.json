@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "local-build": "eas build --profile preview",
+    "build-dev": "eas build --profile development --platform android",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -15,8 +17,10 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/native": "^6.0.2",
+    "aes": "^0.1.0",
     "expo": "~51.0.20",
     "expo-av": "^14.0.6",
+    "expo-dev-client": "~4.0.20",
     "expo-font": "~12.0.8",
     "expo-linking": "~6.3.1",
     "expo-media-library": "^16.0.4",
