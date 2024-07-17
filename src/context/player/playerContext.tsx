@@ -16,6 +16,7 @@ interface PlayerContextType {
   player: PlayerProps;
   updatePlayer: (newPlayer: PlayerProps) => void;
   updateList: (newList: Array<string>) => void;
+  verifySound: () => Promise<boolean>;
   playSound: (uri?: string) => Promise<void>;
   pauseSound: () => Promise<void>;
   resumeSound: () => Promise<void>;
@@ -49,7 +50,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   };
 
   const playSound = async (uri?: string) => {
+    
+    // Se já houver uma instância de `Audio.Sound`, pausar ou parar o som atual
     if (sound) {
+      await sound.stopAsync();
+      await sound.pauseAsync();
       await sound.unloadAsync();
     }
 
@@ -67,7 +72,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     newSound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
       if (status.isLoaded && !status.isPlaying) {
-        updatePlayer({ isPlaying: false, status: "Paused" });
+        updatePlayer({ name: '', isPlaying: false, status: "Paused" });
       }
     });
   };
@@ -75,7 +80,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const pauseSound = async () => {
     if (sound) {
       await sound.pauseAsync();
-      updatePlayer({ isPlaying: false, status: "Paused" });
+      updatePlayer({ name: '...', isPlaying: false, status: "Paused" });
     }
   };
 
@@ -86,7 +91,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const verifySound = async () => {
+    if (sound) {
+      await sound.stopAsync();
+      await sound.pauseAsync();
+      await sound.unloadAsync();
+      return true;
+    }
+    else return false;
+  }
+
   async function playTopList(uri?: string) {
+
     const randomIndex = Math.floor(Math.random() * list.length);
     const selectedUri = uri || list[Math.floor(Math.random() * list.length)];
 
@@ -94,6 +110,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     let nameMusic = selectedUri.replace(/^.*[\\\/]/, "");
     // Remover a extensão .mp3
     nameMusic = nameMusic.replace(/\.mp3$/, "");
+
+
 
     //Play no mp3
     const {sound} =  await Audio.Sound.createAsync({ uri: selectedUri });
@@ -109,6 +127,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     updateList,
     player,
     updatePlayer,
+    verifySound,
     playTopList,
     playSound,
     pauseSound,

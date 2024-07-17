@@ -4,18 +4,15 @@ import { Audio } from "expo-av";
 import { Link } from "expo-router";
 import LottieView from "lottie-react-native";
 import Background from "@/components/background";
-import { Fontisto } from "@expo/vector-icons";
+import { Fontisto, MaterialIcons } from "@expo/vector-icons";
 import { usePlayer } from "../../context/player/playerContext";
 import getRandomMusic from "@/Utils/randomMusics";
 import getFileName from "@/Utils/getMusicName";
 
 export default function Home() {
-
-  const { player, updatePlayer, list, playSound, playTopList, pauseSound, resumeSound } = usePlayer();
+  const { player, updatePlayer, list, playSound, playTopList, pauseSound, resumeSound, verifySound } = usePlayer();
   const animation = useRef<LottieView>(null);
-
   const randomItems = getRandomMusic(list, 4);
-
 
   useEffect(() => {
     if (player.isPlaying) {
@@ -37,6 +34,7 @@ export default function Home() {
             className="bg-white/10 h-10 my-1 rounded-md justify-center px-3"
             key={uri}
             onPress={() => {
+              verifySound(),
               playTopList(uri),
                 updatePlayer({
                   name: `${getFileName(uri)}`,
@@ -157,7 +155,7 @@ export default function Home() {
                 borderRadius: 20,
               }}
             >
-              <Fontisto name="play-list" size={24} color="white" />
+              <MaterialIcons name="queue-music" size={32} color="white" />
             </TouchableOpacity>
           </Link>
         </View>
