@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
-import { Audio, AVPlaybackStatus } from "expo-av";
+import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
+import { Audio, AVPlaybackStatus, InterruptionModeAndroid } from "expo-av";
 import getRandomMusic from "@/Utils/randomMusics";
 
 // Definir a interface do jogador
@@ -21,6 +21,8 @@ interface PlayerContextType {
   pauseSound: () => Promise<void>;
   resumeSound: () => Promise<void>;
   playTopList: (uri?: string) => Promise<void>;
+  playNext: (uri?: string) => Promise<void>;
+  playPrevious: () => Promise<void>;
 }
 
 // Criar o contexto
@@ -29,6 +31,7 @@ export const PlayContext = createContext<PlayerContextType | undefined>(
 );
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
+  const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [list, setList] = useState<Array<string>>([]);
   const [player, setPlayer] = useState<PlayerProps>({
@@ -37,6 +40,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     isPlaying: false,
     uri: "",
   });
+
+  useEffect(() => {
+    (async () => {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: true,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+        playThroughEarpieceAndroid: false
+    });
+    })();
+  }, []);
 
   const updatePlayer = (newPlayer: Partial<PlayerProps>) => {
     setPlayer((prevPlayer) => ({
@@ -48,6 +64,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const updateList = (newList: Array<string>) => {
     setList(newList);
   };
+
+  const verifySound = async () => {
+    if (sound) {
+      await sound.stopAsync();
+      await sound.pauseAsync();
+      await sound.unloadAsync();
+      return true;
+    }
+    else return false;
+  }
 
   const playSound = async (uri?: string) => {
     
@@ -65,6 +91,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     setSound(newSound);
     updatePlayer({
+      name: player.name,
       isPlaying: true,
       status: "Playing",
       uri: uri || player.uri,
@@ -72,7 +99,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     newSound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
       if (status.isLoaded && !status.isPlaying) {
-        updatePlayer({ name: '', isPlaying: false, status: "Paused" });
+        updatePlayer({ name: player.name, isPlaying: false, status: "Paused" });
       }
     });
   };
@@ -91,15 +118,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const verifySound = async () => {
-    if (sound) {
-      await sound.stopAsync();
-      await sound.pauseAsync();
-      await sound.unloadAsync();
-      return true;
+  async function playNext() {
+    if (currentMusicIndex < list.length - 1) {
+      const nextIndex = currentMusicIndex + 1;
+      setCurrentMusicIndex(nextIndex);
+      console.log(nextIndex)
+      await playSound(list[nextIndex].toString());
     }
-    else return false;
   }
+
+  async function playPrevious() {
+    if (currentMusicIndex > 0) {
+      const previousIndex = currentMusicIndex - 1;
+      setCurrentMusicIndex(previousIndex);
+      await playSound(list[previousIndex]);
+    }
+  }
+
 
   async function playTopList(uri?: string) {
 
@@ -132,6 +167,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     playSound,
     pauseSound,
     resumeSound,
+    playNext,
+    playPrevious
   };
 
   return (
