@@ -3,6 +3,9 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import {Slot} from 'expo-router'
 import {PlayerProvider} from '../context/player/playerContext'
 import TrackPlayer from "react-native-track-player"
+import { LogBox } from "react-native"
+
+LogBox.ignoreAllLogs(true);
 
 export default function Layout(){
 return (
