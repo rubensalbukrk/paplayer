@@ -13,10 +13,16 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rubensalbukrk.paplayer"
     },
     "android": {
-      "permissions": ["RECORD_AUDIO", "WAKE_LOCK", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+      "permissions": [
+        "RECORD_AUDIO",
+        "WAKE_LOCK",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -31,7 +37,6 @@
     "plugins": [
       "expo-router"
     ],
-
     "experiments": {
       "typedRoutes": true
     },
