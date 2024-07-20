@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+
 import {
   Alert,
   Text,
@@ -6,14 +6,16 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { BlurView } from "expo-blur";
 import { Link } from "expo-router";
+import { BlurView } from "expo-blur";
 import LottieView from "lottie-react-native";
-import Background from "../../components/background";
-import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { usePlayer } from "../../context/player/playerContext";
-import getRandomMusic from "../../Utils/getRandomMusics";
 import getFileName from "../../Utils/getMusicName";
+import Background from "../../components/background";
+import getRandomMusic from "../../Utils/getRandomMusics";
+import React, { useState, useEffect, useRef } from "react";
+import transformMusicList from "@/Utils/transformMusicList";
+import { usePlayer } from "../../context/player/playerContext";
+import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import TrackPlayer, { Capability, Track } from "react-native-track-player";
 
 export default function Home() {
@@ -38,6 +40,33 @@ export default function Home() {
     }
   }, [player]);
 
+  useEffect(() => {
+
+  },[])
+  
+  //INCIAR TRACK PLAYER
+  useEffect(() => {
+    TrackPlayer.setupPlayer();
+    TrackPlayer.updateOptions({
+      capabilities: [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+        Capability.Stop,
+      ],
+      compactCapabilities: [Capability.Play, Capability.Pause],
+      playIcon: require("../../../assets/play-icon.png"),
+      pauseIcon: require("../../../assets/pause-icon.png"),
+      stopIcon: require("../../../assets/stop-icon.png"),
+      previousIcon: require("../../../assets/previous-icon.png"),
+      nextIcon: require("../../../assets/next-icon.png"),
+      icon: require("../../../assets/notification-icon.png"),
+    });
+    const musicList = transformMusicList(list);
+    TrackPlayer.setQueue(musicList);
+  
+}, []);
 
   const playFromUrl = async (uri: string, index: number) => {
     try {
@@ -57,7 +86,7 @@ export default function Home() {
   };
 
   const playMusic = async () => {
-    await TrackPlayer.skip(Math.floor(Math.random() * 3));
+    await TrackPlayer.skip(0);
     await TrackPlayer.play(); // Inicia a reprodução
     updatePlayer({isPlaying: true})
     getActiveTrack();
@@ -110,7 +139,7 @@ export default function Home() {
               <Text
                 ellipsizeMode="tail"
                 numberOfLines={1}
-                className="text-white text-md text-left"
+                className="text-gray-500 text-md text-left"
               >
                 {getFileName(uri)}
               </Text>

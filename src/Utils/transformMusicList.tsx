@@ -1,9 +1,10 @@
+import getFileName from "./getMusicName";
 
 const transformMusicList = (list: any) => {
     return list.map((item: string, index: number) => ({
       id: index.toString(),
       url: item,
-      title: item,
+      title: `${getFileName(item)}`,
       artist: "Artista Desconhecido",
     }));
   };

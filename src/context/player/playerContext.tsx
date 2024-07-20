@@ -74,30 +74,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const musicList = transformMusicList(list);
-  //INCIAR TRACK PLAYER
-  useEffect(() => {
-    TrackPlayer.setupPlayer();
-    TrackPlayer.updateOptions({
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.Stop,
-      ],
-      compactCapabilities: [Capability.Play, Capability.Pause],
-      playIcon: require("../../../assets/play-icon.png"),
-      pauseIcon: require("../../../assets/pause-icon.png"),
-      stopIcon: require("../../../assets/stop-icon.png"),
-      previousIcon: require("../../../assets/previous-icon.png"),
-      nextIcon: require("../../../assets/next-icon.png"),
-      icon: require("../../../assets/notification-icon.png"),
-    });
-    TrackPlayer.setQueue(musicList);
-  
-}, []);
-
   //Permanecer audio em segundo plano
   useEffect(() => {
     (async () => {

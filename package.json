@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
+    "build-production": "eas build --profile production --platform android",
     "build-local": "eas build --profile preview --platform android",
     "build-dev": "eas build --profile development --platform android",
     "android": "expo start --android",
