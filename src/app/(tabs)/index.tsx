@@ -9,62 +9,25 @@ import {
 import { BlurView } from "expo-blur";
 import { Link } from "expo-router";
 import LottieView from "lottie-react-native";
-import Background from "@/components/background";
+import Background from "../../components/background";
 import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { usePlayer } from "../../context/player/playerContext";
-import getRandomMusic from "@/Utils/randomMusics";
-import getFileName from "@/Utils/getMusicName";
-import TrackPlayer, { Capability, State, Event, useTrackPlayerEvents, PlaybackState, Track } from "react-native-track-player";
-import * as MediaLibrary from "expo-media-library";
-import intensity from "@/Utils/intensity";
+import getRandomMusic from "../../Utils/getRandomMusics";
+import getFileName from "../../Utils/getMusicName";
+import TrackPlayer, { Capability, Track } from "react-native-track-player";
 
 export default function Home() {
   const {
     player,
     updatePlayer,
     list,
-    updateList,
+    intensity,
+    currentTrack,
+    getActiveTrack
   } = usePlayer();
 
   const animation = useRef<LottieView>(null);
   const randomItems = getRandomMusic(list, 4);
-  const [isPlayerSetup, setIsPlayerSetup] = useState<boolean>(false);
-  const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
-  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-  const [randomWallpaper, setRandmoWallpaper] = useState(Math.floor(Math.random() * 9));
-
-  //Listar todas os .mp3 no media library
-  useEffect(() => {
-    const fetchMp3Files = async () => {
-      try {
-        const { status } = await MediaLibrary.requestPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert(
-            "Permission denied",
-            "Cannot access media library without permission"
-          );
-          return;
-        }
-
-        const media = await MediaLibrary.getAssetsAsync({
-          mediaType: "audio",
-          first: 100, // limite de quantos arquivos deseja buscar
-        });
-        //Filtrar todos os arquivos com extensão .mp3
-        const mp3Files = media.assets.filter(
-          (asset) =>
-            asset.mediaType === "audio" && asset.filename.endsWith(".mp3")
-        );
-        setMp3Files(mp3Files);
-        const uris = mp3Files.map((file) => file.uri);
-        updateList(uris);
-      } catch (error) {
-        console.error("Error fetching media assets:", error);
-      }
-    };
-
-    fetchMp3Files();
-  }, []);
 
   //ANIMAÇÃO DE SOM
   useEffect(() => {
@@ -75,50 +38,6 @@ export default function Home() {
     }
   }, [player]);
 
-  const transformMusicList = (list: any) => {
-    return list.map((item: string, index: number) => ({
-      id: index.toString(),
-      url: item,
-      title: item,
-      artist: "Artista Desconhecido",
-    }));
-  };
-
-  const musicList = transformMusicList(list);
-
-    //INICIAR TrackPlayer
-    useEffect(() => {
-  
-      TrackPlayer.setupPlayer();
-      TrackPlayer.updateOptions({
-        capabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-          Capability.Stop,
-        ],
-        compactCapabilities: [Capability.Play, Capability.Pause],
-        playIcon: require("../../../assets/play-icon.png"),
-        pauseIcon: require("../../../assets/pause-icon.png"),
-        stopIcon: require("../../../assets/stop-icon.png"),
-        previousIcon: require("../../../assets/previous-icon.png"),
-        nextIcon: require("../../../assets/next-icon.png"),
-        icon: require("../../../assets/notification-icon.png"),
-      });
-      TrackPlayer.setQueue(musicList);
-    
-  }, []);
-
-  const getActiveTrack = async () => {
-    const currentTrackId = await TrackPlayer.getActiveTrackIndex();
-    if (currentTrackId !== null) {
-      const track = await TrackPlayer.getTrack(currentTrackId || 0);
-      if (track){
-        setCurrentTrack(track);
-      }
-    }
-  };
 
   const playFromUrl = async (uri: string, index: number) => {
     try {
@@ -201,7 +120,7 @@ export default function Home() {
       </View>
 
       {/*VIEW ANIMAÇÃO DE MUSICA*/}
-      <View className="flex w-full h-28 items-center justify-center">
+      <View className="flex w-full h-24 items-center justify-center">
         {player.isPlaying ? (
           <LottieView
             style={{
@@ -222,9 +141,9 @@ export default function Home() {
       <Text
         numberOfLines={2}
         ellipsizeMode="tail"
-        className="text-white mt-24 text-4xl text-center"
+        className="text-white my-14 text-3xl text-center"
       >
-        {`${getFileName(`${currentTrack?.url}` )}` === 'undefined' ? '...' : `${getFileName(`${currentTrack?.url}` )}`}
+        {`${getFileName(`${currentTrack?.url}` )}` === 'undefined' ? '' : `${getFileName(`${currentTrack?.url}` )}`}
       </Text>
 
       {/** BLURVIEW CONTROLES **/}
@@ -328,7 +247,7 @@ export default function Home() {
         </TouchableOpacity>
         </Link>
    
-          <Link href="/listmp" asChild>
+          <Link href="/library" asChild>
             <TouchableOpacity
               style={{
                 zIndex: 10,

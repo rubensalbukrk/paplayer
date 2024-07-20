@@ -1,36 +1,104 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
-import { Audio, AVPlaybackStatus, InterruptionModeAndroid } from "expo-av";
-import getRandomMusic from "@/Utils/randomMusics";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
+import * as MediaLibrary from "expo-media-library";
+import TrackPlayer, { Capability, Track } from "react-native-track-player";
+import { Audio, InterruptionModeAndroid } from "expo-av";
+import transformMusicList from "@/Utils/transformMusicList";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Definir a interface do jogador
 interface PlayerProps {
   name?: string;
   isPlaying: boolean;
   uri?: string;
 }
-
-// Definir a interface do contexto
 interface PlayerContextType {
   list: Array<string>;
   player: PlayerProps;
   updatePlayer: (newPlayer: PlayerProps) => void;
-  updateList: (newList: Array<string>) => void;
+  getAllMP3: () => void;
+  intensity: number;
+  setTransparency: (value: number) => void;
+  currentTrack: Track | null;
+  getActiveTrack: () => void;
 }
 
-// Criar o contexto
 export const PlayContext = createContext<PlayerContextType | undefined>(
   undefined
 );
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
   const [list, setList] = useState<Array<string>>([]);
   const [player, setPlayer] = useState<PlayerProps>({
     name: "",
     isPlaying: false,
     uri: "",
   });
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [intensity, setIntensity] = useState<number>(17);
 
+  useEffect(() => {
+    getAllMP3();
+  }, []);
+
+  const getAllMP3 = async () => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        alert("Você não permitiu acesso a sua biblioteca de musicas");
+        return;
+      }
+
+      const audios = await MediaLibrary.getAssetsAsync({
+        mediaType: "audio",
+        first: 100, // limite de quantos arquivos deseja buscar
+      });
+      //Filtrar todos os arquivos com extensão .mp3
+      const mp3List = audios.assets.filter(
+        (asset) =>
+          asset.mediaType === "audio" && asset.filename.endsWith(".mp3")
+
+      ).map((file) => file.uri);
+
+      setList(mp3List);
+      return true;
+    } catch (error) {
+      return (
+        false && console.error("Problema ao obter lista de musicas!", error)
+      );
+    }
+  };
+
+  const musicList = transformMusicList(list);
+  //INCIAR TRACK PLAYER
+  useEffect(() => {
+    TrackPlayer.setupPlayer();
+    TrackPlayer.updateOptions({
+      capabilities: [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+        Capability.Stop,
+      ],
+      compactCapabilities: [Capability.Play, Capability.Pause],
+      playIcon: require("../../../assets/play-icon.png"),
+      pauseIcon: require("../../../assets/pause-icon.png"),
+      stopIcon: require("../../../assets/stop-icon.png"),
+      previousIcon: require("../../../assets/previous-icon.png"),
+      nextIcon: require("../../../assets/next-icon.png"),
+      icon: require("../../../assets/notification-icon.png"),
+    });
+    TrackPlayer.setQueue(musicList);
+  
+}, []);
+
+  //Permanecer audio em segundo plano
   useEffect(() => {
     (async () => {
       await Audio.setAudioModeAsync({
@@ -39,8 +107,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
         interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        playThroughEarpieceAndroid: false
-    });
+        playThroughEarpieceAndroid: false,
+      });
     })();
   }, []);
 
@@ -51,26 +119,30 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const updateList = (newList: Array<string>) => {
-    setList(newList);
+  const getActiveTrack = async () => {
+    const currentTrackId = await TrackPlayer.getActiveTrackIndex();
+    if (currentTrackId !== null) {
+      const track = await TrackPlayer.getTrack(currentTrackId || 0);
+      if (track){
+        setCurrentTrack(track);
+      }
+    }
   };
 
-  const verifySound = async () => {
-    if (sound) {
-      await sound.stopAsync();
-      await sound.pauseAsync();
-      await sound.unloadAsync();
-      return true;
-    }
-    else return false;
-  }
+  const setTransparency = (number: number) => {
+    setIntensity(number)
+   }
 
   // Valor a ser fornecido para o contexto
   const contextValue: PlayerContextType = {
     list,
-    updateList,
     player,
-    updatePlayer
+    updatePlayer,
+    currentTrack,
+    getActiveTrack,
+    getAllMP3,
+    intensity,
+    setTransparency
   };
 
   return (

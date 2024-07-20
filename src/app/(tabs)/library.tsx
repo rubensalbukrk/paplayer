@@ -2,69 +2,36 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import { Link } from "expo-router";
-import Background from "@/components/background";
-import { usePlayer } from "@/context/player/playerContext";
-import getFileName from "@/Utils/getMusicName";
+import Background from "../../components/background";
+import { usePlayer } from "../../context/player/playerContext";
+import getFileName from "../../Utils/getMusicName";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import intensity from "@/Utils/intensity";
 import TrackPlayer from "react-native-track-player";
 
-const Mp3List: React.FC = () => {
-  const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
-  const { player, updatePlayer, list, updateList } =
+const fetchListFilesMp3: React.FC = () => {
+  const { player, updatePlayer, list, intensity, getActiveTrack } =
     usePlayer();
 
-  //useEffect para listar todos mp3
-  useEffect(() => {
-    const fetchMp3Files = async () => {
-      try {
-        const { status } = await MediaLibrary.requestPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert(
-            "Permission denied",
-            "Cannot access media library without permission"
-          );
-          return;
-        }
-        const media = await MediaLibrary.getAssetsAsync({
-          mediaType: "audio",
-          first: 100, // limite de quantos arquivos deseja buscar
-        });
-        //Filtrar todos os arquivos com extensão .mp3
-        const mp3Files = media.assets.filter(
-          (asset) =>
-            asset.mediaType === "audio" && asset.filename.endsWith(".mp3")
-        );
-        setMp3Files(mp3Files);
-        const uris = mp3Files.map((file) => file.uri);
-        updateList(uris);
-      } catch (error) {
-        console.error("Error fetching media assets:", error);
-      }
-    };
 
-    fetchMp3Files();
-  }, []);
-
-  const playFromUrl = async (uri: string, index: any) => {
+  const playFromUrl = async (item: any, index: any) => {
     try {
       await TrackPlayer.reset();
       await TrackPlayer.add({
         id: index,
-        url: uri,
-        title: `${getFileName(uri)}`,
+        url: item,
+        title: `${getFileName(item)}`,
         artist: 'Artista da Música'
       });
       await TrackPlayer.play();
-  
-
+      updatePlayer({uri: item, isPlaying: true, name: `${getFileName(item)}` })
+      getActiveTrack();
     } catch (error) {
       console.error('Erro ao reproduzir a música:', error);
     }
   };
 
-  const renderItem = ({ item }: { item: MediaLibrary.Asset }) => (
+  const renderItem = ({ item }: { item: any }) => (
     <BlurView
       intensity={intensity}
       experimentalBlurMethod="dimezisBlurView"
@@ -72,12 +39,12 @@ const Mp3List: React.FC = () => {
     >
       <TouchableOpacity
         onPress={() => {
-        playFromUrl(item.uri, item.id);
+        playFromUrl(item, item.id);
         }}
         className="w-full h-8 my-3 px-3 justify-center rounded-md"
       >
         <Text numberOfLines={1} className="text-lg text-white">
-          {getFileName(item.uri)}
+          {getFileName(item)}
         </Text>
       </TouchableOpacity>
     </BlurView>
@@ -103,13 +70,12 @@ const Mp3List: React.FC = () => {
       </BlurView>
 
       <FlatList
-        data={mp3Files}
-        keyExtractor={(item) => item.id}
+        data={list}
+        keyExtractor={(item) => item}
         renderItem={renderItem}
         refreshing
       />
 
-      
       <BlurView
       intensity={intensity}
       experimentalBlurMethod="dimezisBlurView"
@@ -132,4 +98,4 @@ const Mp3List: React.FC = () => {
   );
 };
 
-export default Mp3List;
+export default fetchListFilesMp3;
