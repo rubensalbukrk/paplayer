@@ -57,7 +57,7 @@ export default function Home() {
   };
 
   const playMusic = async () => {
-    await TrackPlayer.skip(Math.floor(Math.random() * 9));
+    await TrackPlayer.skip(Math.floor(Math.random() * 3));
     await TrackPlayer.play(); // Inicia a reprodução
     updatePlayer({isPlaying: true})
     getActiveTrack();
@@ -93,7 +93,7 @@ export default function Home() {
           key={index}
             intensity={intensity}
             experimentalBlurMethod="dimezisBlurView"
-            className="bg-white/30 justify-center shadow-black shadow-md my-1 rounded-lg overflow-hidden"
+            className="bg-white/30 justify-center shadow-black shadow-lg my-1 rounded-lg overflow-hidden"
           >
             <TouchableOpacity
               className="h-10 my-1 justify-center px-3"

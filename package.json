@@ -1,16 +1,15 @@
 {
-  "name": "pa-player",
+  "name": "paplayer",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
-    "local-build": "eas build --profile preview",
+    "build-local": "eas build --profile preview --platform android",
     "build-dev": "eas build --profile development --platform android",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --watchAll",
-    "postinstall": "patch-package"
+    "test": "jest --watchAll"
   },
   "jest": {
     "preset": "jest-expo"
