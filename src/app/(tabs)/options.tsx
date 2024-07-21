@@ -11,11 +11,11 @@ import { usePlayer } from "@/context/player/playerContext";
 
 
 const Options: React.FC = () => {
-  const {intensity, setTransparency} = usePlayer();
+  const {intensity, setTransparency, IsEnabledWallpaper, randomWallpaper, getWallpaper} = usePlayer();
 
   return (
     <View className="flex-1 w-screen h-screen  items-center">
-      <Background index={0} />
+      <Background index={randomWallpaper} />
       
       <BlurView
         intensity={intensity}
@@ -47,7 +47,7 @@ const Options: React.FC = () => {
         </View>
         <View className="flex flex-row w-80 h-28 pt-10 px-3 justify-between items-center rounded-b-xl">
           <Text className="text-white text-xl">Random Wallpapers</Text>
-          <Switch  />
+          <Switch value={IsEnabledWallpaper} onValueChange={() => getWallpaper()} />
         </View>
       </BlurView>
 

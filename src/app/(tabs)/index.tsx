@@ -25,7 +25,8 @@ export default function Home() {
     list,
     intensity,
     currentTrack,
-    getActiveTrack
+    getActiveTrack,
+    randomWallpaper
   } = usePlayer();
 
   const animation = useRef<LottieView>(null);
@@ -46,9 +47,11 @@ export default function Home() {
       const playing: Boolean = (state === State.Playing)
       if (playing){
         updatePlayer({...player, isPlaying: true})
+        alert(`${playing}`)
+        return;
       }
     });
-  },[])
+  })
 
   const playFromUrl = (uri: string, index: number) => {
     try {
@@ -87,7 +90,7 @@ export default function Home() {
 
   return (
     <View className="flex-1 w-screen h-screen  items-center">
-      <Background index={1} />
+      <Background index={randomWallpaper} />
 
       <Text style={{fontFamily: 'DoppioOne'}} className="relative right-28 my-3 mt-12 text-white text-3xl">
         Aleatórias

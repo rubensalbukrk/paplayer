@@ -11,7 +11,7 @@ import { Audio, InterruptionModeAndroid } from "expo-av";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer, { Capability, Track, Event, State } from "react-native-track-player";
 import { useRouter } from "expo-router";
-
+import getRandoms from "@/Utils/getRandomWallpaper";
 
 interface PlayerProps {
   id: number;
@@ -28,6 +28,9 @@ interface PlayerContextType {
   setTransparency: (value: number) => void;
   currentTrack: Track | null;
   getActiveTrack: () => void;
+  randomWallpaper: number;
+  IsEnabledWallpaper: boolean;
+  getWallpaper: () => void;
 }
 
 export const PlayContext = createContext<PlayerContextType | undefined>(
@@ -51,6 +54,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   });
   const [currentTrack, setCurrentTrack] = useState<ExtendedTrack | null>(null);
   const [intensity, setIntensity] = useState<number>(17);
+  const [randomWallpaper, setRandomWallpaper] = useState<number>(0);
+  const [IsEnabledWallpaper, setIsEnabledWallpaper] = useState<boolean>(false);
 
   const getAllMP3 = async () => {
     try {
@@ -115,6 +120,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    if (IsEnabledWallpaper){
+      setTimeout(() => getWallpaper(), 20)
+    }
+  },[IsEnabledWallpaper])
+
+  useEffect(() => {
     getAllMP3();
     initializeTrackPlayer();
   }, []);
@@ -155,6 +166,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setIntensity(number)
    }
 
+   const getWallpaper = () => {
+    setIsEnabledWallpaper((previous) => !previous )
+    setRandomWallpaper(getRandoms);
+   }
    const redirectToHome = () => {
     router.push('/'); // assumindo que a tela inicial é a raiz
   };
@@ -168,7 +183,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     getActiveTrack,
     getAllMP3,
     intensity,
-    setTransparency
+    setTransparency,
+    randomWallpaper,
+    IsEnabledWallpaper,
+    getWallpaper
   };
 
   return (
