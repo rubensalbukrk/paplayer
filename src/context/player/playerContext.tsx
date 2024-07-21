@@ -6,9 +6,10 @@ import React, {
   ReactNode,
 } from "react";
 import * as MediaLibrary from "expo-media-library";
-import TrackPlayer, { Capability, Track } from "react-native-track-player";
+import transformMusicList from "@/Utils/transformMusicList";
 import { Audio, InterruptionModeAndroid } from "expo-av";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import TrackPlayer, { Capability, Track } from "react-native-track-player";
 
 interface PlayerProps {
   name?: string;
@@ -72,6 +73,35 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       );
     }
   };
+  //INCIAR TRACK PLAYER
+  useEffect(() => {
+    TrackPlayer.setupPlayer();
+    TrackPlayer.updateOptions({
+      capabilities: [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+        Capability.Stop,
+      ],
+      compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToPrevious, Capability.SkipToNext],
+      playIcon: require("../../../assets/play-icon.png"),
+      pauseIcon: require("../../../assets/pause-icon.png"),
+      stopIcon: require("../../../assets/stop-icon.png"),
+      previousIcon: require("../../../assets/previous-icon.png"),
+      nextIcon: require("../../../assets/next-icon.png"),
+      icon: require("../../../assets/notification-icon.png"),
+      dislikeOptions: {
+        isActive: true,
+        title: 'gostou?'
+      }
+
+    });
+    const musicList = transformMusicList(list);
+    TrackPlayer.reset();
+    TrackPlayer.add(musicList);
+  
+}, []);
 
   //Permanecer audio em segundo plano
   useEffect(() => {

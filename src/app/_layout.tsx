@@ -27,5 +27,6 @@ return (
         
     </GestureHandlerRootView>
 )
+
 }
 TrackPlayer.registerPlaybackService(() => require('../services/trackPlayerService.js'))
