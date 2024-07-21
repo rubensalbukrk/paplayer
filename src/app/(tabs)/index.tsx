@@ -110,9 +110,9 @@ export default function Home() {
 
   return (
     <View className="flex-1 w-screen h-screen  items-center">
-      <Background index={0} />
+      <Background index={1} />
 
-      <Text className="relative right-28 my-3 mt-12 text-white text-3xl">
+      <Text style={{fontFamily: 'DoppioOne'}} className="relative right-28 my-3 mt-12 text-white text-3xl">
         Aleatórias
       </Text>
 
@@ -139,7 +139,7 @@ export default function Home() {
               <Text
                 ellipsizeMode="tail"
                 numberOfLines={1}
-                className="text-gray-500 text-md text-left"
+                className="text-white text-md text-left"
               >
                 {getFileName(uri)}
               </Text>
