@@ -9,7 +9,7 @@ import * as MediaLibrary from "expo-media-library";
 import transformMusicList from "@/Utils/transformMusicList";
 import { Audio, InterruptionModeAndroid } from "expo-av";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TrackPlayer, { Capability, Track, Event } from "react-native-track-player";
+import TrackPlayer, { Capability, Track, Event, State } from "react-native-track-player";
 import { useRouter } from "expo-router";
 
 
@@ -33,6 +33,11 @@ export const PlayContext = createContext<PlayerContextType | undefined>(
   undefined
 );
 
+interface ExtendedTrack extends Track {
+id?: number
+url : string
+}
+
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
@@ -42,8 +47,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     isPlaying: false,
     uri: "",
   });
-  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<ExtendedTrack | null>(null);
   const [intensity, setIntensity] = useState<number>(17);
+
   const getAllMP3 = async () => {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -71,15 +77,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       );
     }
   };
-
-  useEffect(() => {
-    getAllMP3();
-  }, []);
-
-  //INCIAR TRACK PLAYER
-  useEffect(() => {
-    TrackPlayer.setupPlayer();
-    TrackPlayer.updateOptions({
+  const initializeTrackPlayer = async () => {
+    await TrackPlayer.setupPlayer();
+  
+    await TrackPlayer.updateOptions({
       alwaysPauseOnInterruption: true,
       capabilities: [
         Capability.Play,
@@ -89,7 +90,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         Capability.Stop,
         Capability.SeekTo,
       ],
-      compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToPrevious, Capability.SkipToNext],
+      compactCapabilities: [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToPrevious,
+        Capability.SkipToNext,
+      ],
       playIcon: require("../../../assets/play-icon.png"),
       pauseIcon: require("../../../assets/pause-icon.png"),
       stopIcon: require("../../../assets/stop-icon.png"),
@@ -100,28 +106,35 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         isActive: true,
         title: 'gostou?'
       }
-
     });
-    const NotificationPlayerListener = TrackPlayer.addEventListener(Event.RemoteDuck, redirectToHome);
-    const musicList = transformMusicList(list);
-    TrackPlayer.reset();
-    TrackPlayer.add(musicList);
   
-}, []);
+    const musicList = transformMusicList(list);
+    await TrackPlayer.add(musicList);
+  };
+
+  useEffect(() => {
+    getAllMP3();
+    initializeTrackPlayer();
+  }, []);
+  
+const updatePlaybackState = async () => {
+  const state = await TrackPlayer.getState();
+  updatePlayer({isPlaying: state === State.Playing, name: '', uri: ''});
+};
 
   //Permanecer audio em segundo plano
-  useEffect(() => {
-    (async () => {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        staysActiveInBackground: true,
-        playsInSilentModeIOS: true,
-        shouldDuckAndroid: true,
-        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        playThroughEarpieceAndroid: false,
-      });
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     await Audio.setAudioModeAsync({
+  //       allowsRecordingIOS: false,
+  //       staysActiveInBackground: true,
+  //       playsInSilentModeIOS: true,
+  //       shouldDuckAndroid: true,
+  //       interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+  //       playThroughEarpieceAndroid: false,
+  //     });
+  //   })();
+  // }, []);
 
   const updatePlayer = (newPlayer: Partial<PlayerProps>) => {
     setPlayer((prevPlayer) => ({
@@ -135,7 +148,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (currentTrackId !== null) {
       const track = await TrackPlayer.getTrack(currentTrackId || 0);
       if (track){
-        setCurrentTrack(track);
+        setCurrentTrack({ ...track, id: currentTrackId, url: track.url });
       }
     }
   };
