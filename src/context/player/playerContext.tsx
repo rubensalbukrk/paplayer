@@ -9,7 +9,9 @@ import * as MediaLibrary from "expo-media-library";
 import transformMusicList from "@/Utils/transformMusicList";
 import { Audio, InterruptionModeAndroid } from "expo-av";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TrackPlayer, { Capability, Track } from "react-native-track-player";
+import TrackPlayer, { Capability, Track, Event } from "react-native-track-player";
+import { useRouter } from "expo-router";
+
 
 interface PlayerProps {
   name?: string;
@@ -32,6 +34,7 @@ export const PlayContext = createContext<PlayerContextType | undefined>(
 );
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
   const [list, setList] = useState<Array<string>>([]);
   const [player, setPlayer] = useState<PlayerProps>({
@@ -41,11 +44,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   });
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [intensity, setIntensity] = useState<number>(17);
-
-  useEffect(() => {
-    getAllMP3();
-  }, []);
-
   const getAllMP3 = async () => {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -73,16 +71,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       );
     }
   };
+
+  useEffect(() => {
+    getAllMP3();
+  }, []);
+
   //INCIAR TRACK PLAYER
   useEffect(() => {
     TrackPlayer.setupPlayer();
     TrackPlayer.updateOptions({
+      alwaysPauseOnInterruption: true,
       capabilities: [
         Capability.Play,
         Capability.Pause,
         Capability.SkipToNext,
         Capability.SkipToPrevious,
         Capability.Stop,
+        Capability.SeekTo,
       ],
       compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToPrevious, Capability.SkipToNext],
       playIcon: require("../../../assets/play-icon.png"),
@@ -97,6 +102,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
 
     });
+    const NotificationPlayerListener = TrackPlayer.addEventListener(Event.RemoteDuck, redirectToHome);
     const musicList = transformMusicList(list);
     TrackPlayer.reset();
     TrackPlayer.add(musicList);
@@ -137,6 +143,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const setTransparency = (number: number) => {
     setIntensity(number)
    }
+
+   const redirectToHome = () => {
+    router.push('/'); // assumindo que a tela inicial é a raiz
+  };
 
   // Valor a ser fornecido para o contexto
   const contextValue: PlayerContextType = {
