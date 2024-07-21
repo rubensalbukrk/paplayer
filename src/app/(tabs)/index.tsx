@@ -47,7 +47,6 @@ export default function Home() {
       const playing: Boolean = (state === State.Playing)
       if (playing){
         updatePlayer({...player, isPlaying: true})
-        alert(`${playing}`)
         return;
       }
     });
