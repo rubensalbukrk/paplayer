@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 
-const App = () => {
+const ErrorBoundary = () => {
   const router = useRouter();
-  const handleNotificationClick = () => {
-    router.push('/');
-  };
-  return handleNotificationClick();
+  return router.push('/');
 };
-
-export default App;
+export default ErrorBoundary;
