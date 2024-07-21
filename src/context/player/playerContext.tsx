@@ -8,7 +8,6 @@ import React, {
 import * as MediaLibrary from "expo-media-library";
 import TrackPlayer, { Capability, Track } from "react-native-track-player";
 import { Audio, InterruptionModeAndroid } from "expo-av";
-import transformMusicList from "@/Utils/transformMusicList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface PlayerProps {
