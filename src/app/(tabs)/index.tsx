@@ -16,7 +16,7 @@ import React, { useState, useEffect, useRef } from "react";
 import transformMusicList from "@/Utils/transformMusicList";
 import { usePlayer } from "../../context/player/playerContext";
 import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
-import TrackPlayer, { Capability, Track } from "react-native-track-player";
+import TrackPlayer, { Capability, Track, Event, State } from "react-native-track-player";
 
 export default function Home() {
   const {
@@ -40,37 +40,38 @@ export default function Home() {
     }
   }, [player]);
 
+  // VERIFICAR STATUS DO PLAYER
   useEffect(() => {
-
+    const status = TrackPlayer.addEventListener(Event.PlaybackState, ({state}) => {
+      const playing: Boolean = (state === State.Playing)
+      if (playing){
+        updatePlayer({...player, isPlaying: true})
+      }
+    });
   },[])
 
-  const playFromUrl = async (uri: string, index: number) => {
+  const playFromUrl = (uri: string, index: number) => {
     try {
-      await TrackPlayer.stop();
-      await TrackPlayer.add({
-        id: index,
-        url: uri,
-        title: `${getFileName(uri)}`,
-        artist: 'Artista da Música'
-      });
-      await TrackPlayer.play();
+      TrackPlayer.stop();
+      TrackPlayer.skip(index);
       getActiveTrack();
 
     } catch (error) {
-      console.error('Erro ao reproduzir a música:', error);
+      return TrackPlayer.play()
     }
   };
 
-  const playMusic = async () => {
-    await TrackPlayer.skip(0);
-    await TrackPlayer.play(); // Inicia a reprodução
-    updatePlayer({isPlaying: true})
+  const playMusic = () => {
+   TrackPlayer.setupPlayer(); // Inicia a reprodução
+   TrackPlayer.play();
+
+    updatePlayer({...player, isPlaying: true})
     getActiveTrack();
   };
 
   const pauseMusic = async () => {
     await TrackPlayer.pause();
-    updatePlayer({isPlaying: false, name: 'musica 1', uri: ''});
+    updatePlayer({...player, isPlaying: false, name: '', uri: ''});
   };
 
   const skipToNext = async () => {
@@ -105,6 +106,7 @@ export default function Home() {
               onPress={() => {
                 playFromUrl(uri, index),
                   updatePlayer({
+                    id: index,
                     name: `${getFileName(uri)}`,
                     isPlaying: true,
                     uri: uri,

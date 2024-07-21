@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 
 
 interface PlayerProps {
+  id: number;
   name?: string;
   isPlaying: boolean;
   uri?: string;
@@ -43,6 +44,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
   const [list, setList] = useState<Array<string>>([]);
   const [player, setPlayer] = useState<PlayerProps>({
+    id: 0,
     name: "",
     isPlaying: false,
     uri: "",
@@ -117,10 +119,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     initializeTrackPlayer();
   }, []);
   
-const updatePlaybackState = async () => {
-  const state = await TrackPlayer.getState();
-  updatePlayer({isPlaying: state === State.Playing, name: '', uri: ''});
-};
 
   //Permanecer audio em segundo plano
   // useEffect(() => {
