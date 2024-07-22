@@ -20,7 +20,7 @@ interface PlayerProps {
   uri?: string;
 }
 interface PlayerContextType {
-  list: Array<string>;
+  list: Array<object>;
   player: PlayerProps;
   updatePlayer: (newPlayer: PlayerProps) => void;
   getAllMP3: () => void;
@@ -42,10 +42,24 @@ id?: number
 url : string
 }
 
+TrackPlayer.setupPlayer({})
+  .then(() => {
+    TrackPlayer.updateOptions({
+      capabilities: [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+        Capability.Stop,
+        Capability.SeekTo,
+      ],
+    })
+  })
+
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
-  const [list, setList] = useState<Array<string>>([]);
+  const [list, setList] = useState<Array<object>>([]);
   const [player, setPlayer] = useState<PlayerProps>({
     id: 0,
     name: "",
@@ -70,13 +84,15 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         first: 100, // limite de quantos arquivos deseja buscar
       });
       //Filtrar todos os arquivos com extensão .mp3
-      const mp3List = audios.assets.filter(
+      const uriList = audios.assets.filter(
         (asset) =>
           asset.mediaType === "audio" && asset.filename.endsWith(".mp3")
 
       ).map((file) => file.uri);
-
-      setList(mp3List);
+      
+      //transformar array de uris, em lista do tipo track
+      const list = transformMusicList(uriList)
+      setList(list);
       return true;
     } catch (error) {
       return (
@@ -84,39 +100,29 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       );
     }
   };
-  const initializeTrackPlayer = async () => {
-    await TrackPlayer.setupPlayer();
-  
-    await TrackPlayer.updateOptions({
-      alwaysPauseOnInterruption: true,
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.Stop,
-        Capability.SeekTo,
-      ],
-      compactCapabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToPrevious,
-        Capability.SkipToNext,
-      ],
-      playIcon: require("../../../assets/play-icon.png"),
-      pauseIcon: require("../../../assets/pause-icon.png"),
-      stopIcon: require("../../../assets/stop-icon.png"),
-      previousIcon: require("../../../assets/previous-icon.png"),
-      nextIcon: require("../../../assets/next-icon.png"),
-      icon: require("../../../assets/notification-icon.png"),
-      dislikeOptions: {
-        isActive: true,
-        title: 'gostou?'
-      }
-    });
-  
+  const initializeTrackPlayer = () => {
+
+   TrackPlayer.setupPlayer().then( () => {
+      TrackPlayer.updateOptions({
+        alwaysPauseOnInterruption: true,
+        capabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+          Capability.Stop,
+          Capability.SeekTo,
+        ],
+        playIcon: require("../../../assets/play-icon.png"),
+        pauseIcon: require("../../../assets/pause-icon.png"),
+        stopIcon: require("../../../assets/stop-icon.png"),
+        previousIcon: require("../../../assets/previous-icon.png"),
+        nextIcon: require("../../../assets/next-icon.png"),
+        icon: require("../../../assets/notification-icon.png"),
+      });
+    })
     const musicList = transformMusicList(list);
-    await TrackPlayer.add(musicList);
+  TrackPlayer.add(musicList);
   };
 
   useEffect(() => {
@@ -129,21 +135,22 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     getAllMP3();
     initializeTrackPlayer();
   }, []);
-  
 
-  //Permanecer audio em segundo plano
-  // useEffect(() => {
-  //   (async () => {
-  //     await Audio.setAudioModeAsync({
-  //       allowsRecordingIOS: false,
-  //       staysActiveInBackground: true,
-  //       playsInSilentModeIOS: true,
-  //       shouldDuckAndroid: true,
-  //       interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-  //       playThroughEarpieceAndroid: false,
-  //     });
-  //   })();
-  // }, []);
+      // VERIFICAR STATUS DO PLAYER
+    useEffect(() => {
+      const status = TrackPlayer.addEventListener(Event.PlaybackState, ({state}) => {
+        const playing: boolean = (state === State.Playing)
+  
+        if (playing){
+          updatePlayer({...player, isPlaying: playing})
+          return ;
+        }else{
+          updatePlayer({...player, isPlaying: playing})
+          return ;
+        }
+      });
+    })
+  
 
   const updatePlayer = (newPlayer: Partial<PlayerProps>) => {
     setPlayer((prevPlayer) => ({

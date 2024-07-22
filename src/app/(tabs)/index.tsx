@@ -1,22 +1,13 @@
-
-import {
-  Alert,
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { Alert, Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import { BlurView } from "expo-blur";
 import LottieView from "lottie-react-native";
 import getFileName from "../../Utils/getMusicName";
 import Background from "../../components/background";
-import getRandomMusic from "../../Utils/getRandomMusics";
 import React, { useState, useEffect, useRef } from "react";
-import transformMusicList from "@/Utils/transformMusicList";
 import { usePlayer } from "../../context/player/playerContext";
 import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
-import TrackPlayer, { Capability, Track, Event, State } from "react-native-track-player";
+import TrackPlayer, { Event, State } from "react-native-track-player";
 
 export default function Home() {
   const {
@@ -26,11 +17,10 @@ export default function Home() {
     intensity,
     currentTrack,
     getActiveTrack,
-    randomWallpaper
+    randomWallpaper,
   } = usePlayer();
 
   const animation = useRef<LottieView>(null);
-  const randomItems = getRandomMusic(list, 4);
 
   //ANIMAÇÃO DE SOM
   useEffect(() => {
@@ -41,39 +31,15 @@ export default function Home() {
     }
   }, [player]);
 
-  // VERIFICAR STATUS DO PLAYER
-  useEffect(() => {
-    const status = TrackPlayer.addEventListener(Event.PlaybackState, ({state}) => {
-      const playing: Boolean = (state === State.Playing)
-      if (playing){
-        updatePlayer({...player, isPlaying: true})
-        return;
-      }
-    });
-  })
-
-  const playFromUrl = (uri: string, index: number) => {
-    try {
-      TrackPlayer.stop();
-      TrackPlayer.skip(index);
-      getActiveTrack();
-
-    } catch (error) {
-      return TrackPlayer.play()
-    }
-  };
-
-  const playMusic = () => {
-   TrackPlayer.setupPlayer(); // Inicia a reprodução
-   TrackPlayer.play();
-
-    updatePlayer({...player, isPlaying: true})
+  const playMusic = async () => {
+    await TrackPlayer.play();
     getActiveTrack();
+    updatePlayer({ ...player, isPlaying: true });
   };
 
   const pauseMusic = async () => {
     await TrackPlayer.pause();
-    updatePlayer({...player, isPlaying: false, name: '', uri: ''});
+    updatePlayer({ ...player, isPlaying: false, name: "", uri: "" });
   };
 
   const skipToNext = async () => {
@@ -85,49 +51,21 @@ export default function Home() {
     await TrackPlayer.skipToPrevious();
     getActiveTrack();
   };
-  
 
   return (
     <View className="flex-1 w-screen h-screen  items-center">
       <Background index={randomWallpaper} />
 
-      <Text style={{fontFamily: 'DoppioOne'}} className="relative right-28 my-3 mt-12 text-white text-3xl">
-        Aleatórias
+      <Text
+        numberOfLines={2}
+        ellipsizeMode="tail"
+        className="text-white my-14 text-3xl text-center"
+      >
+        {`${getFileName(`${currentTrack?.url}`)}` === "undefined"
+          ? ""
+          : `${getFileName(`${currentTrack?.url}`)}`}
       </Text>
-
-      <View className="flex mx-4 shadow-black shadow-lg">
-        {randomItems.map((uri, index) => (
-          <BlurView
-          key={index}
-            intensity={intensity}
-            experimentalBlurMethod="dimezisBlurView"
-            className="bg-white/30 justify-center shadow-black shadow-lg my-1 rounded-lg overflow-hidden"
-          >
-            <TouchableOpacity
-              className="h-10 my-1 justify-center px-3"
-              onPress={() => {
-                playFromUrl(uri, index),
-                  updatePlayer({
-                    id: index,
-                    name: `${getFileName(uri)}`,
-                    isPlaying: true,
-                    uri: uri,
-                  }),
-                  getActiveTrack()
-              }}
-            >
-              <Text
-                ellipsizeMode="tail"
-                numberOfLines={1}
-                className="text-white text-md text-left"
-              >
-                {getFileName(uri)}
-              </Text>
-            </TouchableOpacity>
-          </BlurView>
-        ))}
-      </View>
-
+      
       {/*VIEW ANIMAÇÃO DE MUSICA*/}
       <View className="flex w-full h-24 items-center justify-center">
         {player.isPlaying ? (
@@ -146,14 +84,6 @@ export default function Home() {
           />
         ) : null}
       </View>
-
-      <Text
-        numberOfLines={2}
-        ellipsizeMode="tail"
-        className="text-white my-14 text-3xl text-center"
-      >
-        {`${getFileName(`${currentTrack?.url}` )}` === 'undefined' ? '' : `${getFileName(`${currentTrack?.url}` )}`}
-      </Text>
 
       {/** BLURVIEW CONTROLES **/}
       <BlurView
@@ -183,7 +113,7 @@ export default function Home() {
 
           <TouchableOpacity
             className="z-10 w-28 h-28 bg-white/20 justify-center items-center rounded-full"
-            onPress={player.isPlaying ? pauseMusic: playMusic}
+            onPress={player.isPlaying ? pauseMusic : playMusic}
           >
             {/** PLAY **/}
             {player.isPlaying ? (
@@ -234,28 +164,23 @@ export default function Home() {
               <Fontisto name="heart" size={24} color="white" />
             </TouchableOpacity>
           </Link>
-        {/**OPTIONS MENU */}
-        <Link href="/options" asChild>
-        <TouchableOpacity
-        style={{
-          zIndex: 10,
-          width: 50,
-          height: 50,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#ffffff10",
-          borderRadius: 50,
-        }}
-        >
-          <Ionicons
-            name="options"
-            size={34}
-            color="white"
-            opacity={0.7}
-          />
-        </TouchableOpacity>
-        </Link>
-   
+          {/**OPTIONS MENU */}
+          <Link href="/options" asChild>
+            <TouchableOpacity
+              style={{
+                zIndex: 10,
+                width: 50,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#ffffff10",
+                borderRadius: 50,
+              }}
+            >
+              <Ionicons name="options" size={34} color="white" opacity={0.7} />
+            </TouchableOpacity>
+          </Link>
+
           <Link href="/library" asChild>
             <TouchableOpacity
               style={{

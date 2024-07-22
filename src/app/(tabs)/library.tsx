@@ -24,7 +24,7 @@ const fetchListFilesMp3: React.FC = () => {
         artist: 'Artista da Música'
       });
       await TrackPlayer.play();
-      updatePlayer({uri: item, isPlaying: true, name: `${getFileName(item)}` })
+      updatePlayer({...player, uri: item, isPlaying: true, name: `${getFileName(item)}` })
       getActiveTrack();
     } catch (error) {
       console.error('Erro ao reproduzir a música:', error);

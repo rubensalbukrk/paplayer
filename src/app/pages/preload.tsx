@@ -1,19 +1,26 @@
-import React from "react";
+import React, {useEffect, useRef} from "react";
 import { View, Text, Image} from "react-native";
-import intensity from "../../Utils/intensity";
-import { LottieView } from "../../Utils/ViewLottie";
-
-
+import LottieView from "lottie-react-native";
 
 const Preload = () => {
+  useEffect(() => {
+    animation.current?.play(0, 120);
+    return () => {
+      animation.current?.pause();
+    }
+  })
+  const animation = useRef<LottieView>(null);
+
   return (
-    <View className="flex-1 flex-col gap-6 justify-center items-center">
-
-      <Image className="w-24 h-24" resizeMode="contain" source={require('../../../assets/images/icon.png')} />
-      <Text className="text-purple-600 font-bold shadow-lg shadow-purple-700 text-3xl">
-        Sincronizando
-      </Text>
-
+    <View className="flex-1 w-full h-full items-center justify-center bg-white">
+      <LottieView
+      style={{width: '100%', height: '100%'}} 
+      autoPlay
+      loop
+      ref={animation}
+      duration={2000}
+      source={require('../../../assets/animations/ASTRONAUT-MUSICS.json')}
+      />
   </View>
   )
 };
