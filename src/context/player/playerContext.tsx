@@ -37,10 +37,6 @@ export const PlayContext = createContext<PlayerContextType | undefined>(
   undefined
 );
 
-interface ExtendedTrack extends Track {
-id?: number
-url : string
-}
 
 TrackPlayer.setupPlayer({})
   .then(() => {
@@ -59,14 +55,14 @@ TrackPlayer.setupPlayer({})
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
-  const [list, setList] = useState<Array<object>>([]);
+  const [list, setList] = useState<Array<Track>>([]);
   const [player, setPlayer] = useState<PlayerProps>({
     id: 0,
     name: "",
     isPlaying: false,
     uri: "",
   });
-  const [currentTrack, setCurrentTrack] = useState<ExtendedTrack | null>(null);
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [intensity, setIntensity] = useState<number>(17);
   const [randomWallpaper, setRandomWallpaper] = useState<number>(0);
   const [IsEnabledWallpaper, setIsEnabledWallpaper] = useState<boolean>(false);

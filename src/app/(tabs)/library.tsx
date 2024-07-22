@@ -1,31 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
-import * as MediaLibrary from "expo-media-library";
 import { Link } from "expo-router";
 import Background from "../../components/background";
 import { usePlayer } from "../../context/player/playerContext";
-import getFileName from "../../Utils/getMusicName";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, { Track } from "react-native-track-player";
 
 const fetchListFilesMp3: React.FC = () => {
   const { player, updatePlayer, list, intensity, getActiveTrack } =
     usePlayer();
 
 
-  const playFromUrl = async (item: any, index: any) => {
+  const playFromUrl = async (item: any, index: number) => {
     try {
-      await TrackPlayer.reset();
-      await TrackPlayer.add({
-        id: index,
-        url: item,
-        title: `${getFileName(item)}`,
-        artist: 'Artista da Música'
-      });
-      await TrackPlayer.play();
-      updatePlayer({...player, uri: item, isPlaying: true, name: `${getFileName(item)}` })
+     await TrackPlayer.skip(index);
+      updatePlayer({...player, uri: item.url, isPlaying: true, name: item.title })
       getActiveTrack();
+      alert(`nome: ${item.title}, url: ${item.url}`)
     } catch (error) {
       console.error('Erro ao reproduzir a música:', error);
     }
@@ -44,7 +36,7 @@ const fetchListFilesMp3: React.FC = () => {
         className="w-full h-8 my-3 px-3 justify-center rounded-md"
       >
         <Text numberOfLines={1} className="text-lg text-white">
-          {getFileName(item)}
+          {item.title}
         </Text>
       </TouchableOpacity>
     </BlurView>
@@ -71,7 +63,7 @@ const fetchListFilesMp3: React.FC = () => {
 
       <FlatList
         data={list}
-        keyExtractor={(item) => item}
+        keyExtractor={(item, index) => index.toString() }
         renderItem={renderItem}
         refreshing
       />

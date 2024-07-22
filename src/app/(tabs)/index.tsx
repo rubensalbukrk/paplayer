@@ -31,6 +31,7 @@ export default function Home() {
     }
   }, [player]);
 
+
   const playMusic = async () => {
     await TrackPlayer.play();
     getActiveTrack();
