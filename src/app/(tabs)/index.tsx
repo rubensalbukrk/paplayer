@@ -7,7 +7,7 @@ import Background from "../../components/background";
 import React, { useState, useEffect, useRef } from "react";
 import { usePlayer } from "../../context/player/playerContext";
 import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
-import TrackPlayer, { Event, State } from "react-native-track-player";
+import TrackPlayer, { usePlaybackState, Event, State} from "react-native-track-player";
 
 export default function Home() {
   const {
@@ -21,6 +21,11 @@ export default function Home() {
   } = usePlayer();
 
   const animation = useRef<LottieView>(null);
+
+  const playerState = usePlaybackState();
+  const isPlaying = playerState || undefined === State.Playing;
+
+
 
   const playMusic = async () => {
     await TrackPlayer.play();
@@ -41,12 +46,15 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (player.isPlaying) {
+    if (isPlaying.state === 'playing') {
       animation.current?.play(0, 120)
+      updatePlayer({...player, isPlaying: true})
     }else{
       animation.current?.pause();
+      updatePlayer({...player, isPlaying: false})
+
     }
-  })
+  },[isPlaying])
 
   return (
     <View className="flex-1 w-screen h-screen  items-center">
@@ -57,14 +65,12 @@ export default function Home() {
         ellipsizeMode="tail"
         className="text-white my-14 text-3xl text-center"
       >
-        {`${getFileName(`${currentTrack?.url}`)}` === "undefined"
-          ? ""
-          : `${getFileName(`${currentTrack?.url}`)}`}
+        {player.isPlaying === true ? player.name : '' }
       </Text>
       
       {/* VIEW ANIMAÇÃO DE MUSICA */}
       <View className="flex w-full h-24 items-center justify-center">
-        {player.isPlaying ? (
+        {isPlaying.state === 'playing' ? (
           <LottieView
             style={{
               zIndex: 1,

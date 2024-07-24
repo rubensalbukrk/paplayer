@@ -14,11 +14,11 @@ const fetchListFilesMp3: React.FC = () => {
 
   const playFromUrl = async (item: Track, index: number) => {
     try {
-      getActiveTrack();
       TrackPlayer.stop();
       TrackPlayer.skip(index);
       updatePlayer({...player, uri: item.url, isPlaying: true, name: item.title })
-
+      TrackPlayer.play();
+      getActiveTrack();
     } catch (error) {
       Alert.alert(`Erro ao reproduzir a música: ${error}`, 'Aviso');
     }

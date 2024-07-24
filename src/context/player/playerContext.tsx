@@ -95,7 +95,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       ).map((file) => file.uri);
     
      const musicList = transformMusicList(uriList);
-    setList(musicList);
+     setList(musicList);
     TrackPlayer.setQueue(musicList);
       return true;
     } catch (error) {
@@ -115,21 +115,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     getAllMP3();
   }, []);
 
-      // VERIFICAR STATUS DO PLAYER
-    useEffect(() => {
-      const status = TrackPlayer.addEventListener(Event.PlaybackState, ({state}) => {
-        const playing: boolean = (state === State.Playing)
-  
-        if (playing){
-          updatePlayer({...player, isPlaying: playing})
-          return ;
-        }else{
-          updatePlayer({...player, isPlaying: playing})
-          return ;
-        }
-      });
-    })
-  
   const updatePlayer = (newPlayer: Partial<PlayerProps>) => {
     setPlayer((prevPlayer) => ({
       ...prevPlayer,
@@ -143,6 +128,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const track = await TrackPlayer.getTrack(currentTrackId || 0);
       if (track){
         setCurrentTrack({ ...track, id: currentTrackId, url: track.url });
+        updatePlayer({...track, name: track.title, isPlaying: true, uri: track.url})
       }
     }
   };
