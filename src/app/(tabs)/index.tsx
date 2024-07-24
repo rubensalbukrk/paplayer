@@ -22,36 +22,31 @@ export default function Home() {
 
   const animation = useRef<LottieView>(null);
 
-  //ANIMAÇÃO DE SOM
-  useEffect(() => {
-    if (player.isPlaying) {
-      animation.current?.play(0, 120);
-    } else {
-      animation.current?.pause();
-    }
-  }, [player]);
-
-
   const playMusic = async () => {
     await TrackPlayer.play();
     getActiveTrack();
     updatePlayer({ ...player, isPlaying: true });
   };
-
   const pauseMusic = async () => {
     await TrackPlayer.pause();
     updatePlayer({ ...player, isPlaying: false, name: "", uri: "" });
   };
-
   const skipToNext = async () => {
     await TrackPlayer.skipToNext();
     getActiveTrack();
   };
-
   const skipToPrevious = async () => {
     await TrackPlayer.skipToPrevious();
     getActiveTrack();
   };
+
+  useEffect(() => {
+    if (player.isPlaying) {
+      animation.current?.play(0, 120)
+    }else{
+      animation.current?.pause();
+    }
+  })
 
   return (
     <View className="flex-1 w-screen h-screen  items-center">
@@ -67,7 +62,7 @@ export default function Home() {
           : `${getFileName(`${currentTrack?.url}`)}`}
       </Text>
       
-      {/*VIEW ANIMAÇÃO DE MUSICA*/}
+      {/* VIEW ANIMAÇÃO DE MUSICA */}
       <View className="flex w-full h-24 items-center justify-center">
         {player.isPlaying ? (
           <LottieView

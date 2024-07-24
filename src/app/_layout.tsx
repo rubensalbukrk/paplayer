@@ -6,8 +6,7 @@ import Preload from "./pages/preload"
 import TrackPlayer from "react-native-track-player"
 import {PlayerProvider} from '../context/player/playerContext'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
-
-
+    
 LogBox.ignoreAllLogs(true);
 
 export default function Layout(){

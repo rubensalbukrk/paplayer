@@ -20,7 +20,7 @@ interface PlayerProps {
   uri?: string;
 }
 interface PlayerContextType {
-  list: Array<object>;
+  list: any;
   player: PlayerProps;
   updatePlayer: (newPlayer: PlayerProps) => void;
   getAllMP3: () => void;
@@ -38,24 +38,32 @@ export const PlayContext = createContext<PlayerContextType | undefined>(
 );
 
 
-TrackPlayer.setupPlayer({})
-  .then(() => {
-    TrackPlayer.updateOptions({
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.Stop,
-        Capability.SeekTo,
-      ],
-    })
-  })
+TrackPlayer.setupPlayer()
+.then( () => {
+TrackPlayer.updateOptions({
+   alwaysPauseOnInterruption: true,
+   capabilities: [
+     Capability.Play,
+     Capability.Pause,
+     Capability.SkipToNext,
+     Capability.SkipToPrevious,
+     Capability.Stop,
+     Capability.SeekTo,
+   ],
+   playIcon: require("../../../assets/play-icon.png"),
+   pauseIcon: require("../../../assets/pause-icon.png"),
+   stopIcon: require("../../../assets/stop-icon.png"),
+   previousIcon: require("../../../assets/previous-icon.png"),
+   nextIcon: require("../../../assets/next-icon.png"),
+   icon: require("../../../assets/notification-icon.png"),
+ });
+})
+
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [mp3Files, setMp3Files] = useState<MediaLibrary.Asset[]>([]);
-  const [list, setList] = useState<Array<Track>>([]);
+  const [list, setList] = useState<any>([]);
   const [player, setPlayer] = useState<PlayerProps>({
     id: 0,
     name: "",
@@ -85,40 +93,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           asset.mediaType === "audio" && asset.filename.endsWith(".mp3")
 
       ).map((file) => file.uri);
-      
-      //transformar array de uris, em lista do tipo track
-      const list = transformMusicList(uriList)
-      setList(list);
+    
+     const musicList = transformMusicList(uriList);
+    setList(musicList);
+    TrackPlayer.setQueue(musicList);
       return true;
     } catch (error) {
       return (
         false && console.error("Problema ao obter lista de musicas!", error)
       );
     }
-  };
-  const initializeTrackPlayer = () => {
-
-   TrackPlayer.setupPlayer().then( () => {
-      TrackPlayer.updateOptions({
-        alwaysPauseOnInterruption: true,
-        capabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-          Capability.Stop,
-          Capability.SeekTo,
-        ],
-        playIcon: require("../../../assets/play-icon.png"),
-        pauseIcon: require("../../../assets/pause-icon.png"),
-        stopIcon: require("../../../assets/stop-icon.png"),
-        previousIcon: require("../../../assets/previous-icon.png"),
-        nextIcon: require("../../../assets/next-icon.png"),
-        icon: require("../../../assets/notification-icon.png"),
-      });
-    })
-    const musicList = transformMusicList(list);
-  TrackPlayer.add(musicList);
   };
 
   useEffect(() => {
@@ -129,7 +113,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     getAllMP3();
-    initializeTrackPlayer();
   }, []);
 
       // VERIFICAR STATUS DO PLAYER
@@ -147,7 +130,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       });
     })
   
-
   const updatePlayer = (newPlayer: Partial<PlayerProps>) => {
     setPlayer((prevPlayer) => ({
       ...prevPlayer,

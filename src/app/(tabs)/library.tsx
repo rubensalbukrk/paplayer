@@ -3,7 +3,7 @@ import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import Background from "../../components/background";
 import { usePlayer } from "../../context/player/playerContext";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import TrackPlayer, { Track } from "react-native-track-player";
 
@@ -12,33 +12,42 @@ const fetchListFilesMp3: React.FC = () => {
     usePlayer();
 
 
-  const playFromUrl = async (item: any, index: number) => {
+  const playFromUrl = async (item: Track, index: number) => {
     try {
-     await TrackPlayer.skip(index);
-      updatePlayer({...player, uri: item.url, isPlaying: true, name: item.title })
       getActiveTrack();
-      alert(`nome: ${item.title}, url: ${item.url}`)
+      TrackPlayer.stop();
+      TrackPlayer.skip(index);
+      updatePlayer({...player, uri: item.url, isPlaying: true, name: item.title })
+
     } catch (error) {
-      console.error('Erro ao reproduzir a música:', error);
+      Alert.alert(`Erro ao reproduzir a música: ${error}`, 'Aviso');
     }
   };
 
-  const renderItem = ({ item }: { item: any }) => (
+  const renderItem = ({ item }: { item: Track }) => (
     <BlurView
       intensity={intensity}
       experimentalBlurMethod="dimezisBlurView"
-      className="bg-white/30 justify-center px-3 my-1 mx-3 rounded-lg overflow-hidden"
+      className="bg-white/30 justify-center pl-16 my-1 mx-3 rounded-lg overflow-hidden"
     >
+    
       <TouchableOpacity
         onPress={() => {
         playFromUrl(item, item.id);
         }}
-        className="w-full h-8 my-3 px-3 justify-center rounded-md"
+        className="absolute w-12 bg-white/20 h-full my-3 items-center justify-center rounded-md"
       >
+       <Feather name="play" color={"white"} size={32} /> 
+      </TouchableOpacity>
+      <Text numberOfLines={1} className="text-lg text-white">
+          {item.artist}
+        </Text>
+        <Text numberOfLines={1} className="text-lg text-white">
+          {item.artwork}
+        </Text>
         <Text numberOfLines={1} className="text-lg text-white">
           {item.title}
         </Text>
-      </TouchableOpacity>
     </BlurView>
   );
 
@@ -63,7 +72,7 @@ const fetchListFilesMp3: React.FC = () => {
 
       <FlatList
         data={list}
-        keyExtractor={(item, index) => index.toString() }
+        keyExtractor={(track, index) => index.toString() }
         renderItem={renderItem}
         refreshing
       />
