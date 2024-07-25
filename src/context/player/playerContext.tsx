@@ -71,6 +71,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     uri: "",
   });
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+
+
   const [intensity, setIntensity] = useState<number>(17);
   const [randomWallpaper, setRandomWallpaper] = useState<number>(0);
   const [IsEnabledWallpaper, setIsEnabledWallpaper] = useState<boolean>(false);

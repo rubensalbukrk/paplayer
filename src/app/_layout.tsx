@@ -23,7 +23,6 @@ return (
         <PlayerProvider>
              <Slot />      
         </PlayerProvider>
-        
     </GestureHandlerRootView>
 )
 

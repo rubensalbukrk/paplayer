@@ -1,13 +1,13 @@
-import { Alert, Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, StatusBar, Image } from "react-native";
 import { Link } from "expo-router";
 import { BlurView } from "expo-blur";
 import LottieView from "lottie-react-native";
-import getFileName from "../../Utils/getMusicName";
 import Background from "../../components/background";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { usePlayer } from "../../context/player/playerContext";
 import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
-import TrackPlayer, { usePlaybackState, Event, State} from "react-native-track-player";
+import TrackPlayer, { usePlaybackState } from "react-native-track-player";
+import Aleatorys from "@/components/aleatorys";
 
 export default function Home() {
   const {
@@ -23,8 +23,6 @@ export default function Home() {
   const animation = useRef<LottieView>(null);
 
   const playerState = usePlaybackState();
-  const isPlaying = playerState || undefined === State.Playing;
-
 
 
   const playMusic = async () => {
@@ -46,31 +44,26 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (isPlaying.state === 'playing') {
+    if (playerState.state === 'playing') {
       animation.current?.play(0, 120)
       updatePlayer({...player, isPlaying: true})
     }else{
       animation.current?.pause();
       updatePlayer({...player, isPlaying: false})
-
     }
-  },[isPlaying])
+  },[playerState])
+
+
 
   return (
-    <View className="flex-1 w-screen h-screen  items-center">
+    <View className="flex-1 w-screen h-screen items-center">
       <Background index={randomWallpaper} />
-
-      <Text
-        numberOfLines={2}
-        ellipsizeMode="tail"
-        className="text-white my-14 text-3xl text-center"
-      >
-        {player.isPlaying === true ? player.name : '' }
-      </Text>
       
+      <Aleatorys />
+
       {/* VIEW ANIMAÇÃO DE MUSICA */}
-      <View className="flex w-full h-24 items-center justify-center">
-        {isPlaying.state === 'playing' ? (
+      <View className="w-full h-24 mt-40 items-center justify-center">
+        {playerState.state === 'playing' ? (
           <LottieView
             style={{
               zIndex: 1,
@@ -86,6 +79,14 @@ export default function Home() {
           />
         ) : null}
       </View>
+
+      <Text
+        numberOfLines={3}
+        ellipsizeMode="tail"
+        className="text-white text-2xl my-10 mx-2 "
+      >
+        {currentTrack?.title}
+      </Text>
 
       {/** BLURVIEW CONTROLES **/}
       <BlurView
@@ -103,7 +104,7 @@ export default function Home() {
               zIndex: 2,
               width: 50,
               height: 50,
-              backgroundColor: "#ffffff30",
+              backgroundColor: "#ffffff20",
               justifyContent: "center",
               alignItems: "center",
               borderRadius: 50,
@@ -114,7 +115,7 @@ export default function Home() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="z-10 w-28 h-28 bg-white/20 justify-center items-center rounded-full"
+            className="z-10 w-28 h-28 bg-white/10 justify-center items-center rounded-full"
             onPress={player.isPlaying ? pauseMusic : playMusic}
           >
             {/** PLAY **/}
@@ -138,7 +139,7 @@ export default function Home() {
               zIndex: 10,
               width: 50,
               height: 50,
-              backgroundColor: "#ffffff30",
+              backgroundColor: "#ffffff20",
               justifyContent: "center",
               alignItems: "center",
               borderRadius: 50,
@@ -163,7 +164,7 @@ export default function Home() {
               }}
             >
               {/** LIKE **/}
-              <Fontisto name="heart" size={24} color="white" />
+              <Fontisto name="heart" size={24} color="white" opacity={0.5} />
             </TouchableOpacity>
           </Link>
           {/**OPTIONS MENU */}
@@ -179,7 +180,7 @@ export default function Home() {
                 borderRadius: 50,
               }}
             >
-              <Ionicons name="options" size={34} color="white" opacity={0.7} />
+              <Ionicons name="options" size={34} color="white" opacity={0.5} />
             </TouchableOpacity>
           </Link>
 
@@ -196,11 +197,12 @@ export default function Home() {
               }}
             >
               {/** BIBLIOTECA **/}
-              <MaterialIcons name="queue-music" size={32} color="white" />
+              <MaterialIcons name="queue-music" size={32} color="white" opacity={0.5} />
             </TouchableOpacity>
           </Link>
         </View>
       </BlurView>
+      <StatusBar barStyle="light-content" animated={true} translucent={true} />
     </View>
   );
 }

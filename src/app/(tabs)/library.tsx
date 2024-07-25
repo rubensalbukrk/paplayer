@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, Alert, TouchableOpacity, StatusBar } from "react-native";
 import { Link } from "expo-router";
 import Background from "../../components/background";
 import { usePlayer } from "../../context/player/playerContext";
@@ -10,8 +10,7 @@ import TrackPlayer, { Track } from "react-native-track-player";
 const fetchListFilesMp3: React.FC = () => {
   const { player, updatePlayer, list, intensity, getActiveTrack } =
     usePlayer();
-
-
+    
   const playFromUrl = async (item: Track, index: number) => {
     try {
       TrackPlayer.stop();
@@ -30,7 +29,6 @@ const fetchListFilesMp3: React.FC = () => {
       experimentalBlurMethod="dimezisBlurView"
       className="bg-white/30 justify-center pl-16 my-1 mx-3 rounded-lg overflow-hidden"
     >
-    
       <TouchableOpacity
         onPress={() => {
         playFromUrl(item, item.id);
@@ -94,7 +92,7 @@ const fetchListFilesMp3: React.FC = () => {
         </Link>
       </BlurView>
         
-      
+      <StatusBar barStyle="light-content" animated={true} translucent={true} />
     </View>
   );
 };
