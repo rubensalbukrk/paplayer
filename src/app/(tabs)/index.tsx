@@ -60,7 +60,7 @@ export default function Home() {
       <Aleatorys />
 
       {/* VIEW ANIMAÇÃO DE MUSICA */}
-      <View className="w-full h-24 mt-40 items-center justify-center">
+      <View className="w-full h-24 mt-44 items-center justify-center">
         {playerState.state === 'playing' ? (
           <LottieView
             style={{
@@ -79,9 +79,10 @@ export default function Home() {
       </View>
 
       <Text
+      style={{fontFamily: 'Lato Light'}}
         numberOfLines={3}
         ellipsizeMode="tail"
-        className="text-white text-2xl my-10 mx-2 "
+        className="text-white text-2xl my-12 mx-2 "
       >
         {currentTrack?.title}
       </Text>

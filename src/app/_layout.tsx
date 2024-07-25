@@ -1,6 +1,6 @@
 import "@/styles/global.css"
 import {Slot} from 'expo-router'
-import {useFonts} from 'expo-font'
+import {useFonts } from 'expo-font'
 import { LogBox } from "react-native"
 import Preload from "./pages/preload"
 import TrackPlayer from "react-native-track-player"
@@ -11,7 +11,9 @@ LogBox.ignoreAllLogs(true);
 
 export default function Layout(){
     const [fontsLoaded] = useFonts({
-        'Doppio One': require('../../assets/fonts/SpaceMono-Regular.ttf'),
+        'Doppio One': require('../../assets/fonts/DoppioOne.ttf'),
+        'Lato Light': require('../../assets/fonts/Lato-Light.ttf'),
+        'Lato Regular': require('../../assets/fonts/Lato-Regular.ttf')
     });
 
       if(!fontsLoaded) {

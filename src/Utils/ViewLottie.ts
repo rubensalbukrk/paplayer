@@ -1,1 +1,3 @@
-export const LottieView = require("lottie-react-native")
+const LottieView = require("lottie-react-native")
+
+export default LottieView;

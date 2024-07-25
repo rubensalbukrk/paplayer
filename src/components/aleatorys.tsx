@@ -16,7 +16,7 @@ const Aleatorys = () => {
     const randomItems = getRandomItems(list,4);
     return (
         <View className='w-screen h-28 mt-12' >
-          <Text className="text-3xl text-white ml-8 my-2">Aleatórias</Text>
+          <Text style={{fontFamily: 'Lato Regular'}} className="text-3xl text-white ml-8 my-2">Aleatórias</Text>
         {randomItems?.map((item: Track) => (
           <BlurView
           intensity={intensity}
