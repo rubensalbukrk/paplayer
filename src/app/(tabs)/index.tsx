@@ -53,8 +53,6 @@ export default function Home() {
     }
   },[playerState])
 
-
-
   return (
     <View className="flex-1 w-screen h-screen items-center">
       <Background index={randomWallpaper} />
