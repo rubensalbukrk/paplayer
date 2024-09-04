@@ -54,19 +54,17 @@ export default function Home() {
   },[playerState])
 
   return (
-    <View className="flex-1 w-screen h-screen items-center">
-      <Background index={randomWallpaper} />
+    <View className="flex w-screen h-screen items-center">
+       <Background index={randomWallpaper} />
       
       <Aleatorys />
 
       {/* VIEW ANIMAÇÃO DE MUSICA */}
-      <View className="w-full h-24 mt-44 items-center justify-center">
+      <View className="flex w-full h-20 justify-center items-center">
         {playerState.state === 'playing' ? (
           <LottieView
             style={{
-              zIndex: 1,
-              position: "absolute",
-              bottom: 0,
+              zIndex: 10,
               width: "100%",
               height: 30,
             }}
@@ -82,19 +80,20 @@ export default function Home() {
       style={{fontFamily: 'Lato Light'}}
         numberOfLines={3}
         ellipsizeMode="tail"
-        className="text-white text-2xl my-12 mx-2 "
+        className="text-white my-10 text-xl"
       >
         {currentTrack?.title}
       </Text>
+
 
       {/** BLURVIEW CONTROLES **/}
       <BlurView
         intensity={intensity}
         experimentalBlurMethod="dimezisBlurView"
         style={{ width: "85%" }}
-        className="flex absolute shadow-black shadow-lg bottom-5 flex-col bg-white/70  rounded-3xl overflow-hidden py-4 justify-between items-center"
+        className="flex shadow-black shadow-lg flex-col bg-white/70  rounded-3xl overflow-hidden py-4 justify-between items-center"
       >
-        <View className="flex flex-row w-full h-28 mb-10 px-8 justify-between items-center">
+        <View className="flex flex-row w-full h-28 px-8 justify-between items-center">
           <TouchableOpacity
             onPress={() => {
               skipToPrevious();
@@ -103,7 +102,6 @@ export default function Home() {
               zIndex: 2,
               width: 50,
               height: 50,
-              backgroundColor: "#ffffff20",
               justifyContent: "center",
               alignItems: "center",
               borderRadius: 50,
@@ -114,7 +112,7 @@ export default function Home() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="z-10 w-28 h-28 bg-white/10 justify-center items-center rounded-full"
+            className="z-10 w-28 h-28 justify-center items-center rounded-full"
             onPress={player.isPlaying ? pauseMusic : playMusic}
           >
             {/** PLAY **/}
@@ -138,7 +136,6 @@ export default function Home() {
               zIndex: 10,
               width: 50,
               height: 50,
-              backgroundColor: "#ffffff20",
               justifyContent: "center",
               alignItems: "center",
               borderRadius: 50,
@@ -148,59 +145,10 @@ export default function Home() {
             <Fontisto name="step-forward" size={24} color="white" />
           </TouchableOpacity>
         </View>
-
-        <View className="flex w-full h-12 flex-row justify-between items-end px-4">
-          <Link href="/" asChild>
-            <TouchableOpacity
-              style={{
-                zIndex: 10,
-                width: 50,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#ffffff10",
-                borderRadius: 50,
-              }}
-            >
-              {/** LIKE **/}
-              <Fontisto name="heart" size={24} color="white" opacity={0.5} />
-            </TouchableOpacity>
-          </Link>
-          {/**OPTIONS MENU */}
-          <Link href="/options" asChild>
-            <TouchableOpacity
-              style={{
-                zIndex: 10,
-                width: 50,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#ffffff10",
-                borderRadius: 50,
-              }}
-            >
-              <Ionicons name="options" size={34} color="white" opacity={0.5} />
-            </TouchableOpacity>
-          </Link>
-
-          <Link href="/library" asChild>
-            <TouchableOpacity
-              style={{
-                zIndex: 10,
-                width: 50,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#ffffff10",
-                borderRadius: 50,
-              }}
-            >
-              {/** BIBLIOTECA **/}
-              <MaterialIcons name="queue-music" size={32} color="white" opacity={0.5} />
-            </TouchableOpacity>
-          </Link>
-        </View>
       </BlurView>
+
+      
+
       <StatusBar barStyle="light-content" animated={true} translucent={true} />
     </View>
   );

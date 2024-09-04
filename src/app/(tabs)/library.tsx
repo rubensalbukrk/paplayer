@@ -10,9 +10,10 @@ import {
 import { Link } from "expo-router";
 import Background from "../../components/background";
 import { usePlayer } from "../../context/player/playerContext";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import TrackPlayer, { Track } from "react-native-track-player";
+import FastImage from 'expo-fast-image';
+import unknowArtUri from '../../../assets/images/unknowArt.png'
 
 const Library: React.FC = () => {
   const { player, updatePlayer, list, intensity, getActiveTrack, randomWallpaper } = usePlayer();
@@ -34,28 +35,40 @@ const Library: React.FC = () => {
     }
   };
 
+
+
   const renderItem = ({ item }: { item: Track }) => (
-    <BlurView
-      intensity={intensity}
-      experimentalBlurMethod="dimezisBlurView"
-      className="bg-white/30 justify-center pl-16 my-1 mx-3 rounded-lg overflow-hidden"
-    >
-      <TouchableOpacity
+    <TouchableOpacity
         onPress={() => {
           playFromUrl(item, item.id);
         }}
-        className="absolute w-12 bg-white/20 h-full my-3 items-center justify-center rounded-md"
+        className="flex w-96 h-14 my-2 items-center justify-center rounded-md"
       >
-        <Feather name="play" color={"white"} size={32} />
-      </TouchableOpacity>
-      <Text numberOfLines={1} className="text-lg text-white">
-        {item.artist}
-      </Text>
-
-      <Text numberOfLines={1} className="text-lg text-white">
-        {item.title}
-      </Text>
+    <BlurView
+      intensity={intensity}
+      experimentalBlurMethod="dimezisBlurView"
+      className="flex flex-row w-96 h-14 bg-white/30 gap-x-2 my-1 rounded-lg overflow-hidden"
+    >
+        <FastImage
+        style={{ width: 50, height: '100%' }}
+          source={
+            item.artwork
+              ? { uri: item.artwork, priority: FastImage.priority.normal }
+              : unknowArtUri
+          }
+        resizeMode={FastImage.resizeMode?.contain}
+        />
+      
+        <View className="flex flex-col">
+        <Text numberOfLines={1} ellipsizeMode="clip" className="text-lg text-white">
+            {item.title}
+          </Text>
+          <Text numberOfLines={1} className="text-md text-slate-200">
+            {item.artist}
+          </Text>
+        </View>
     </BlurView>
+    </TouchableOpacity>
   );
 
   return (
@@ -65,17 +78,11 @@ const Library: React.FC = () => {
       <BlurView
         intensity={intensity}
         experimentalBlurMethod="dimezisBlurView"
-        className="w-full bg-white/30 justify-center shadow-black shadow-xl mb-5 rounded-lg overflow-hidden"
+        className="w-full h-28 bg-white/30 justify-center items-center shadow-black shadow-xl mb-5 rounded-b-xl overflow-hidden"
       >
-        <View className="flex flex-row w-full gap-x-2 h-28 pt-10 pl-6 items-center rounded-b-xl">
-          <MaterialCommunityIcons
-            name="folder-music-outline"
-            size={40}
-            color="white"
-            opacity={0.7}
-          />
-          <Text className="text-white text-xl">Minhas musicas</Text>
-        </View>
+
+          <Text className="text-white text-xl">Songs</Text>
+
       </BlurView>
 
       <FlatList
@@ -84,23 +91,6 @@ const Library: React.FC = () => {
         renderItem={renderItem}
         refreshing
       />
-
-      <BlurView
-        intensity={intensity}
-        experimentalBlurMethod="dimezisBlurView"
-        className="w-24 h-24 my-4 justify-center items-center  bg-white/10 rounded-full overflow-hidden"
-      >
-        <Link href="/" asChild>
-          <TouchableOpacity className="w-24 h-24 rounded-full justify-center items-center my-4">
-            <MaterialCommunityIcons
-              name="home-circle-outline"
-              size={62}
-              color="white"
-              opacity={0.7}
-            />
-          </TouchableOpacity>
-        </Link>
-      </BlurView>
 
       <StatusBar barStyle="light-content" animated={true} translucent={true} />
     </View>

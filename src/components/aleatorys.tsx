@@ -12,16 +12,16 @@ const Aleatorys = () => {
         const shuffled = [...list].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
       };
-
     const randomItems = getRandomItems(list,4);
     return (
-        <View className='w-screen h-28 mt-12' >
-          <Text style={{fontFamily: 'Lato Regular'}} className="text-3xl text-white ml-8 my-2">Aleatórias</Text>
-        {randomItems?.map((item: Track) => (
+        <View className='flex w-screen my-10' >
+          <Text style={{fontFamily: 'Lato Regular'}} className="text-xl text-white ml-8 my-2">Randoms</Text>
+        {randomItems?.map((item: Track, index: number) => (
           <BlurView
+          key={index}
           intensity={intensity}
           experimentalBlurMethod="dimezisBlurView"
-          className="bg-white/30 justify-center h-12 pl-16 my-1 mx-6 rounded-lg overflow-hidden"
+          className="flex bg-white/30 justify-center h-12 pl-16 my-1 mx-6 rounded-lg overflow-hidden"
         >
           <TouchableOpacity
             onPress={() => {

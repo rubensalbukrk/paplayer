@@ -3,7 +3,7 @@ import React, { useState,ReactNode} from 'react';
 import {View, Image, ImageSourcePropType} from 'react-native';
 
 interface BackgroundProps {
-    childre?: ReactNode
+    children?: ReactNode
     index: number
 }
 
@@ -14,7 +14,7 @@ export const Background: React.FC<BackgroundProps> = (props) => {
         1: require('../../assets/images/Backgrounds/Background1.jpg'),
         2: require('../../assets/images/Backgrounds/Background2.jpg'),
         3: require('../../assets/images/Backgrounds/Background3.png'),
-        4: require('../../assets/images/Backgrounds/Background4.jpeg'),
+        4: require('../../assets/images/Backgrounds/Background4.jpg'),
         5: require('../../assets/images/Backgrounds/Background5.jpeg'),
         6: require('../../assets/images/Backgrounds/Background6.jpg'),
         7: require('../../assets/images/Backgrounds/Background7.jpg'),
