@@ -72,7 +72,7 @@ const Library: React.FC = () => {
   );
 
   return (
-    <View className="flex-1 w-screen h-screen justify-center items-center">
+    <View className="flex-1 w-screen h-screen justify-center self-center items-center">
       <Background index={randomWallpaper} />
 
       <BlurView
@@ -86,6 +86,11 @@ const Library: React.FC = () => {
       </BlurView>
 
       <FlatList
+        style={{width: '100%', paddingHorizontal: 10, display: 'flex', height: '70%', alignSelf: 'center'}}
+        maxToRenderPerBatch={20}
+        ListFooterComponent={() => 
+          <View className='w-96 h-12 mt-12 bg-slate-600/20'/>
+        }
         data={list}
         keyExtractor={(track, index) => index.toString()}
         renderItem={renderItem}
