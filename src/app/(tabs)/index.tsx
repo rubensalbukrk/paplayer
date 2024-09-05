@@ -26,17 +26,6 @@ export default function Home() {
   const playerState = usePlaybackState();
 
 
-  const playMusic = async () => {
-    await TrackPlayer.play();
-    getActiveTrack();
-    updatePlayer({ ...player, isPlaying: true });
-  };
-  const pauseMusic = async () => {
-    await TrackPlayer.pause();
-    updatePlayer({ ...player, isPlaying: false, name: "", uri: "" });
-  };
-
-
   useEffect(() => {
     if (playerState.state === 'playing') {
       animation.current?.play(0, 120)

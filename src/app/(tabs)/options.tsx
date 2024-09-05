@@ -36,6 +36,9 @@ const Options: React.FC = () => {
         <View className="flex flex-2 flex-col w-80 h-28 px-3 rounded-b-xl">
           <Text className="text-white text-2xl">Opacity</Text>
           <Slider
+          minimumTrackTintColor="#ff5454"
+          maximumTrackTintColor="#444"
+          thumbTintColor="#ff5454"
             minimumValue={1}
             maximumValue={100}
             value={intensity}
@@ -46,12 +49,16 @@ const Options: React.FC = () => {
 
         <View className="flex flex-row w-80 h-28 px-3 justify-between items-center rounded-b-xl">
           <Text className="text-white text-xl">Random wallpapers</Text>
-          <Switch value={IsEnabledWallpaper} onValueChange={() => getWallpaper()} />
+          <Switch 
+          value={IsEnabledWallpaper}
+          trackColor={{
+            true: "#ff5454"
+          }}
+          onValueChange={() => getWallpaper()} />
         </View>
         
       </BlurView>
 
-      
       <StatusBar barStyle="light-content" animated={true} translucent={true} />
     </View>
   );
