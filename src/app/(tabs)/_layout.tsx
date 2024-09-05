@@ -10,14 +10,16 @@ export default function TabsLayout() {
     screenOptions={{
         headerShown: false,
         tabBarLabelStyle: ({
-          fontSize: 14
+          fontSize: 14,
+          paddingBottom: 4
         }),
         tabBarStyle: {
+          height: 60,
           position: 'absolute',
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           borderTopWidth: 0,
-          paddingTop: 8
+          paddingTop: 8,
         },
         tabBarActiveTintColor: '#ff5454',
         tabBarInactiveTintColor: '#888888', 

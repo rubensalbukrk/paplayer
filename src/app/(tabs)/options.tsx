@@ -4,8 +4,8 @@ import { BlurView } from "expo-blur";
 import Background from "../../components/background";
 import {Slider} from '@miblanchard/react-native-slider';
 import { usePlayer } from "@/context/player/playerContext";
-import { View, Text, TouchableOpacity, Switch, StatusBar, ScrollView } from "react-native";
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
+import { View, Text, Switch, StatusBar } from "react-native";
+import {  Ionicons } from "@expo/vector-icons";
 
 
 
@@ -36,11 +36,10 @@ const Options: React.FC = () => {
         <View className="flex flex-2 flex-col w-80 h-28 px-3 rounded-b-xl">
           <Text className="text-white text-2xl">Opacity</Text>
           <Slider
-        minimumValue={1}
-        maximumValue={100}
-        value={intensity}
-        onValueChange={(value) => setTransparency(Math.round(value[0]))}
-        
+            minimumValue={1}
+            maximumValue={100}
+            value={intensity}
+            onValueChange={(value) => setTransparency(Math.round(value[0]))}
       />
       <Text className="text-white">{intensity}</Text>
         </View>

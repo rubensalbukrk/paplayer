@@ -1,13 +1,14 @@
-import { Text, View, TouchableOpacity, StyleSheet, StatusBar, Image } from "react-native";
-import { Link } from "expo-router";
+import { Text, View, TouchableOpacity, StyleSheet, StatusBar} from "react-native";
 import { BlurView } from "expo-blur";
 import LottieView from "lottie-react-native";
 import Background from "../../components/background";
 import React, { useEffect, useRef } from "react";
 import { usePlayer } from "../../context/player/playerContext";
-import { Fontisto, MaterialIcons, Ionicons } from "@expo/vector-icons";
-import TrackPlayer, { usePlaybackState } from "react-native-track-player";
+import { Fontisto } from "@expo/vector-icons";
+import TrackPlayer, { usePlaybackState, Event, useTrackPlayerEvents} from "react-native-track-player";
 import Aleatorys from "@/components/aleatorys";
+import {Slider} from '@miblanchard/react-native-slider';
+import PlayerMediaControls from '@/components/playercontrols'
 
 export default function Home() {
   const {
@@ -34,14 +35,7 @@ export default function Home() {
     await TrackPlayer.pause();
     updatePlayer({ ...player, isPlaying: false, name: "", uri: "" });
   };
-  const skipToNext = async () => {
-    await TrackPlayer.skipToNext();
-    getActiveTrack();
-  };
-  const skipToPrevious = async () => {
-    await TrackPlayer.skipToPrevious();
-    getActiveTrack();
-  };
+
 
   useEffect(() => {
     if (playerState.state === 'playing') {
@@ -54,7 +48,7 @@ export default function Home() {
   },[playerState])
 
   return (
-    <View className="flex w-screen h-screen items-center">
+    <View className="flex flex-1 w-screen h-screen items-center">
        <Background index={randomWallpaper} />
       
       <Aleatorys />
@@ -93,61 +87,8 @@ export default function Home() {
         style={{ width: "85%" }}
         className="flex shadow-black shadow-lg flex-col bg-white/70  rounded-3xl overflow-hidden py-4 justify-between items-center"
       >
-        <View className="flex flex-row w-full h-28 px-8 justify-between items-center">
-          <TouchableOpacity
-            onPress={() => {
-              skipToPrevious();
-            }}
-            style={{
-              zIndex: 2,
-              width: 50,
-              height: 50,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 50,
-            }}
-          >
-            {/** ANTERIOR MUSICA **/}
-            <Fontisto name="step-backwrad" size={24} color="white" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="z-10 w-28 h-28 justify-center items-center rounded-full"
-            onPress={player.isPlaying ? pauseMusic : playMusic}
-          >
-            {/** PLAY **/}
-            {player.isPlaying ? (
-              <Fontisto
-                name="pause"
-                size={32}
-                color="white"
-                suppressHighlighting={true}
-              />
-            ) : (
-              <Fontisto name="play" size={32} color="white" />
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
-              skipToNext();
-            }}
-            style={{
-              zIndex: 10,
-              width: 50,
-              height: 50,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 50,
-            }}
-          >
-            {/** PROXIMA MUSICA **/}
-            <Fontisto name="step-forward" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
+        <PlayerMediaControls />
       </BlurView>
-
-      
 
       <StatusBar barStyle="light-content" animated={true} translucent={true} />
     </View>
