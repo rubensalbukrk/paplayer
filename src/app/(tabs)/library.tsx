@@ -35,8 +35,6 @@ const Library: React.FC = () => {
     }
   };
 
-
-
   const renderItem = ({ item }: { item: Track }) => (
     <TouchableOpacity
         onPress={() => {
