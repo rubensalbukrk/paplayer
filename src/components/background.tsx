@@ -10,7 +10,7 @@ interface BackgroundProps {
 export const Background: React.FC<BackgroundProps> = (props) => {
 
     const images: { [key: number]: ImageSourcePropType } = {
-        0: require('../../assets/images/Backgrounds/Background0.jpeg'),
+        0: require('../../assets/images/Backgrounds/Background0.jpg'),
         1: require('../../assets/images/Backgrounds/Background1.jpg'),
         2: require('../../assets/images/Backgrounds/Background2.jpg'),
         3: require('../../assets/images/Backgrounds/Background3.png'),
@@ -21,7 +21,7 @@ export const Background: React.FC<BackgroundProps> = (props) => {
         8: require('../../assets/images/Backgrounds/Background8.jpg'),
         9: require('../../assets/images/Backgrounds/Background9.jpg'),
         10: require('../../assets/images/Backgrounds/Background10.jpg'),
-        11: require('../../assets/images/Backgrounds/Background11.jpg'),
+        11: require('../../assets/images/Backgrounds/Background11.jpeg'),
         12: require('../../assets/images/Backgrounds/Background12.jpg'),
         13: require('../../assets/images/Backgrounds/Background13.jpg'),
         14: require('../../assets/images/Backgrounds/Background14.jpg'),
