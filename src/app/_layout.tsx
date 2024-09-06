@@ -2,7 +2,7 @@ import "@/styles/global.css"
 import {Slot} from 'expo-router'
 import {useFonts } from 'expo-font'
 import { LogBox } from "react-native"
-import Preload from "./pages/preload"
+import Preload from "../components/preload"
 import TrackPlayer from "react-native-track-player"
 import {PlayerProvider} from '../context/player/playerContext'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'

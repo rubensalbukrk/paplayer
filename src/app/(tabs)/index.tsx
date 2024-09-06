@@ -8,7 +8,7 @@ import { Fontisto } from "@expo/vector-icons";
 import TrackPlayer, { usePlaybackState, Event, useTrackPlayerEvents} from "react-native-track-player";
 import Aleatorys from "@/components/aleatorys";
 import {Slider} from '@miblanchard/react-native-slider';
-import PlayerMediaControls from '@/components/playercontrols'
+import PlayerMediaControls from '@/components/playerControls'
 
 export default function Home() {
   const {
@@ -67,8 +67,7 @@ export default function Home() {
       >
         {currentTrack?.title}
       </Text>
-
-
+      
       {/** BLURVIEW CONTROLES **/}
       <BlurView
         intensity={intensity}

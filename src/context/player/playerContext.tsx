@@ -137,7 +137,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const setTransparency = (number: number) => {
     setIntensity(number)
    }
-
    const getWallpaper = () => {
     setIsEnabledWallpaper((previous) => !previous )
     setRandomWallpaper(getRandoms);

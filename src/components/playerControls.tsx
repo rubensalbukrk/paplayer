@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {Ionicons} from '@expo/vector-icons'
 import {
    View,
-   Text, 
+   Text,
+   Image,
    TouchableOpacity, 
    StyleSheet } from 'react-native';
 import TrackPlayer,{ 
@@ -10,16 +11,12 @@ import TrackPlayer,{
   Event, 
   RepeatMode,
   useTrackPlayerEvents,
-  useProgress } from 'react-native-track-player'
-  import { Slider } from '@miblanchard/react-native-slider';
+  useProgress
+} from 'react-native-track-player'
+import { Slider } from '@miblanchard/react-native-slider';
+import { usePlayer } from '@/context/player/playerContext';
+import { formatTime } from '@/Utils/formatTime';
 
-
-const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-};
-  
 export const PlayerMediaControls = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isRepeating, setIsRepeating] = useState(false);
@@ -27,6 +24,7 @@ export const PlayerMediaControls = () => {
     const [isSeeking, setIsSeeking] = useState(false);
     const [seek, setSeek] = useState<number>(0);
     const progress = useProgress();
+    const {getActiveTrack} = usePlayer();
 
     useTrackPlayerEvents([Event.PlaybackState, Event.PlaybackError], async (event) => {
       if (event.type === Event.PlaybackState) {
@@ -41,7 +39,6 @@ export const PlayerMediaControls = () => {
       await TrackPlayer.seekTo(value);
       setIsSeeking(false);
     };
-
     const togglePlayPause = () => {
       if (isPlaying) {
         TrackPlayer.pause();
@@ -49,8 +46,14 @@ export const PlayerMediaControls = () => {
         TrackPlayer.play();
       }
     };
-    const skipToNext = () => TrackPlayer.skipToNext();
-    const skipToPrevious = () => TrackPlayer.skipToPrevious();
+    const skipToNext = () => {
+      TrackPlayer.skipToNext()
+      getActiveTrack();
+    };
+    const skipToPrevious = () => {
+      TrackPlayer.skipToPrevious();
+      getActiveTrack();
+    };
     const toggleRepeat = async () => {
       const newRepeatMode = isRepeating ? RepeatMode.Off : RepeatMode.Track;
       await TrackPlayer.setRepeatMode(newRepeatMode);
@@ -98,6 +101,12 @@ export const PlayerMediaControls = () => {
   };
   
   const styles = StyleSheet.create({
+    artwork: {
+      display: 'flex',
+      width: 100,
+      height: 100,
+      backgroundColor: '#ff5454'
+    },
     progress: {
       height: '100%',
       backgroundColor: '#ff5454',
