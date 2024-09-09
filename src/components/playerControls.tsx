@@ -44,6 +44,7 @@ export const PlayerMediaControls = () => {
         TrackPlayer.pause();
       } else {
         TrackPlayer.play();
+        getActiveTrack();
       }
     };
     const skipToNext = () => {
@@ -81,7 +82,7 @@ export const PlayerMediaControls = () => {
         </View>
         <View className="flex flex-row w-full justify-between items-center">
         <TouchableOpacity onPress={() => setFavorite(!favorite)}>
-            <Ionicons name={favorite ? "heart-sharp" : "heart-outline"} size={32} color={!favorite ? "white" : "#ff5454"} />
+            <Ionicons name={favorite ? "heart-sharp" : "heart-outline"} size={24} color={!favorite ? "white" : "#ff5454"} />
           </TouchableOpacity>
           <TouchableOpacity onPress={skipToPrevious}>
             <Ionicons name="play-skip-back" size={32} color="white" />

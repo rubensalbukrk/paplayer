@@ -57,8 +57,8 @@ const Library: React.FC = () => {
         resizeMode={FastImage.resizeMode?.contain}
         />
       
-        <View className="flex flex-col">
-        <Text numberOfLines={1} ellipsizeMode="clip" className="text-lg text-white">
+        <View className="flex flex-col pr-3">
+        <Text numberOfLines={1} ellipsizeMode="tail" className="text-lg text-slate-200">
             {item.title}
           </Text>
           <Text numberOfLines={1} className="text-md text-slate-200">
